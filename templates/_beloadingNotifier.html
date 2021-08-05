@@ -1,0 +1,68 @@
+{% macro beloadingNotifier(version, beload=True, firefox="firefox", release="new release", notifier=True) %}
+<!-- 
+    Simple macro to load beloading for fading and browser_notifier for
+    firefox confirmation and new release confirmation 
+-->
+<script src="{{ url_for('static', filename='beloading.js') }}"></script>
+<script src="{{ url_for('static', filename='browserNotifier.js') }}"></script>
+<script type='text/javascript'>
+$(document).ready(function () {
+    $('.navbar-inverse').addClass('hide')
+    var toLoadNotify = function () {
+        browserNotifier({
+        storeVal: 'browserNotifier',
+        text: "{{ firefox }}",
+        validator: function () {
+            return new Promise(function (resolve, reject) {
+              if (navigator.userAgent.indexOf('Firefox') === -1) {
+                  return resolve(true)
+              } else return reject(false)
+            })
+        }}, function () {
+            browserNotifier({
+                text: "{{ release }}",
+                iconLink: 'https://fqms.github.io/#download',
+                iconClass: 'fa fa-download',
+                storeVal: 'verNotifier',
+                validator: function () {
+                    return new Promise(function (resolve, reject) {
+                        fetch('https://fqms.github.io/js/releases.js').then(function () {
+                            $.getScript('https://fqms.github.io/js/releases.js')
+                            .done(function () {
+                                ['Windows', 'Linux', 'Mac'].forEach(function (os) {
+                                    if (window.navigator.userAgent.indexOf(os) !== -1) {
+                                        if (releases[os] !== '{{ version }}') resolve(true)
+                                        else reject(false)
+                                    }
+                                    if (os === 'Mac') reject(false)
+                                })
+                            })
+                            .fail(function () {
+                                return reject(false)
+                            })
+                        }).catch(function () { return reject(false) })
+                    })
+                }
+            }, function () {
+                $('.navbar-inverse').removeClass('hide') 
+            })
+        })
+    }
+    {% if beload %}
+    beloading({
+      background: 'rgba(0,0,0,1)',
+      text: ' ',
+      icon: ' '
+    }, callback=function () {
+        $('.navbar-inverse').removeClass('hide')
+        // NOTE: Disabling browserNotifier for Firefox
+        // {% if notififer %}setTimeout(toLoadNotify, 1500){% else %}$('.navbar-inverse').removeClass('hide'){% endif %}
+    })
+    {% else %}
+    $('.navbar-inverse').removeClass('hide')
+    // NOTE: Disabling browserNotifier for Firefox
+    // if (window.location.href.split('/').slice(-1)[0] !== 'manage' && window.location.href.split('/').slice(-1)[0] !== 'customize') {% if notifier %}toLoadNotify(){% endif %}
+    {% endif %}
+})
+</script>
+{% endmacro %}

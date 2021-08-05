@@ -1,0 +1,48 @@
+<!-- This Source Code Form is subject to the terms of the Mozilla Public
+   - License, v. 2.0. If a copy of the MPL was not distributed with this
+   - file, You can obtain one at http://mozilla.org/MPL/2.0/. -->
+
+{% extends "base.html" %}
+{% block title %} FQM - {{ page_title  }} {% endblock %}
+{% block head %}
+{{ super() }}
+{{ datepicker.loader() }}
+{{ datepicker.picker(id='#date') }}
+{% endblock %}
+
+{%- from "sb_manage.html" import sb_manage with context %}
+{% block sidebar %}
+{{ sb_manage() }}
+{% endblock %}
+
+{% block page_content %}
+{% from "_helpers.html" import render_field with context %}
+<div class="col-md-12">
+  <form method="POST" enctype="multipart/form-data" id="fm">
+	  <div class="panel panel-default">
+	    <div class="panel-heading text-center">
+		    <h3 class="text-muted">
+          <span class="fa fa-search"></span>
+          <strong> {{ translate('Search tickets', 'en', [defLang]) }} </strong>
+        </h3>
+	    </div>
+	    <div class="panel-body">
+		    {{ form.csrf_token }}
+		    <center><span class="fa fa-5x mt-2 mb-3 img-thumbnail text-primary fa-search"></span></center>
+		    <p class="h3 text-center text-muted ar2">
+		      | {{ translate('You can search tickets with any of the following parameters, if you wish to exclude any of them, simply leave it unchanged', 'en', [defLang]) }} |
+		    </p>
+		    <hr>
+		    {{ render_field(form.tl, class="form-control") }}
+		    {{ render_field(form.number, class="form-control") }}
+        	{{ render_field(form.date, class="form-control") }}
+        <p class="pt-6"></p>
+		    <center>
+          <button class="btn btn-md btn-danger">{{ translate('Search', 'en', [defLang]) }}</button>
+        </center>
+        <p class="pt-2"></p>
+	    </div>
+    </div>
+  </form>
+</div>
+{% endblock %}

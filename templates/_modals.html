@@ -1,0 +1,86 @@
+{% macro qrModal (modals=[],vid=False, close=None) %}
+    <!-- Receives [['id', 'title', 'qr()'], ...] -->
+    {% for theModal in modals%}
+        <div class="modal fade" id="{{theModal[0]}}">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="btn-danger close" data-dismiss="modal">&times;</button>
+                        <h4 class="modal-title ar1">{{theModal[1]}}</h4>
+                    </div>
+                    <div class="modal-body">
+                        <center>
+                            {% if vid %}
+                            <video src="{{theModal[2]}}" controls class='img-responsive'></video>
+                            {% else %}
+                            <img class="img-thumbnail img-responsive pic"
+                                src="{{theModal[2]}}"
+                                alt="{{theModal[1]}}"
+                            >
+                            {% endif %}
+                        </center>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn-danger close" data-dismiss="modal">{{close}}</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% endfor %}
+{% endmacro %}
+
+{% macro confirmModal (modals=[], yes='Yes', no='No') %}
+    <!-- Receives [['id', 'title', 'message', 'link'], ...] -->
+    {% for theModal in modals%}
+        <div class="modal fade" id="{{theModal[0]}}">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal">&times;</button>
+                        <h4 class="modal-title text-center ar1"> {{theModal[1]}} </h4>
+                    </div>
+                    <div class="modal-body">
+                        <h4 class="text-danger text-center text-warning ar2 mb-10 mt-10">
+                            <strong>
+                                {{theModal[2]}}
+                            </strong>
+                        </h4>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="close btn btn-md btn-warning pull-left" data-dismiss="modal">{{no}}</button>
+                        <a href="{{theModal[3]}}">
+                            <button type="button" class="close btn btn-md btn-danger">{{yes}}</button>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% endfor %}
+{% endmacro %}
+
+{% macro mapModal (modals=[], close='Close') %}
+    <!-- Receives [['id', 'title', 'img'], ...] -->
+    {% for theModal in modals%}
+    <div class="modal fade" id="{{theModal[0]}}">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close btn-danger" data-dismiss="modal">&times;</button>
+                        <h4 class="modal-title ar1">{{theModal[1]}}</h4>
+                </div>
+                <div class="modal-body">
+                    <center>
+                        <img class="img-responsive img-thumbnail tobc"
+                            src="{{theModal[2]}}"
+                            alt="Map image"
+                        >
+                    </center>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="close btn-danger" data-dismiss="modal">{{close}}</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+{% endmacro %}

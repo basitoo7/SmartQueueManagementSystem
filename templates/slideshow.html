@@ -1,0 +1,184 @@
+<!-- This Source Code Form is subject to the terms of the Mozilla Public
+   - License, v. 2.0. If a copy of the MPL was not distributed with this
+   - file, You can obtain one at http://mozilla.org/MPL/2.0/. -->
+
+{% extends "base.html" %}
+{% block title %} FQM - {{ page_title  }} {% endblock %}
+{% import "_macros.html" as macros %}
+
+{%- from "sb_cust.html" import sb_cust with context %}
+{% block sidebar %}
+{{ sb_cust() }}
+{% endblock %}
+
+{% block page_content %}
+<link href="{{ url_for('static', filename='css/gfonts.css') }}" rel="stylesheet">
+<link href="{{ url_for('static', filename='css/fade.css') }}" rel="stylesheet">
+{% from '_modals.html' import confirmModal %}
+{% from '_footers.html' import spacer, panelFooter %}
+<div class="col-xs-12">
+    <div class="panel panel-primary">
+        <div class="panel-heading">
+	    	<h3 class="text text-center">
+    			<strong>{{ translate('Slideshow', 'en', [defLang]) }} - {{ translate('Slides list', 'en', [defLang]) }}</strong>
+	    	</h3>
+	    	<div class="row">
+				<div class="col-xs-12 text-center">
+		    		<div class="btn-group-justified">
+						<a data-toggle="modal" data-target="#fss" class="btn btn-primary">
+			    			<span class="fa fa-eye hidden-xs"></span>
+          					<strong>{{ translate('Preview all', 'en', [defLang]) }}</strong>
+						</a>
+						<a data-toggle="modal" data-target="#dall" class="btn btn-danger">
+			    			<span class="fa fa-trash hidden-xs"></span>
+          					<strong>{{ translate('Delete all', 'en', [defLang]) }}</strong>
+						</a>
+		    		</div>
+				</div>
+	    	</div>
+        </div>
+        <div class="panel-body">
+	    	<div class="row text-center h3 ar2 text-muted hidden-xs">
+				<div class="col-sm-6">
+				    ({{ translate('ID . Title', 'en', [defLang]) }})
+				</div>
+				<div class="col-sm-4">
+				    ({{ translate('Background', 'en', [defLang]) }})
+				</div>
+				<div class="col-sm-2">
+				    ({{ translate('Actions', 'en', [defLang]) }})
+				</div>
+	    	</div>
+	    	{% if len(slides) > 0 %}
+	    	{% for mfile in slides %}
+	    	<div class="row well h4 text-center {% if mfile.ikey == 00 %} text-primary {% else %} text-danger {% endif %}">
+				<div class="col-xs-12 col-sm-6 ar1">
+			    	{{ mfile.id }}.{% if mfile.title != "" %} {{ mfile.title }}
+			    	{% else %}
+        			{{ translate('Empty', 'en', [defLang]) }}
+        			{% endif %}
+				</div>
+				<div class="col-xs-12 col-sm-4 ar1">
+		   			{% if mfile.ikey == 00 %}
+           			{{ translate('Colored background', 'en', [defLang]) }}
+		   			{% else %} <u {% if ar %} class="ar1" {% endif %}>{{ mfile.bname }} </u>{% endif %}
+				</div>
+				<div class="col-xs-12 col-sm-2">
+		    		<a href="#" data-toggle="modal" data-target="#preview{{ mfile.id }}"
+						data-toggle="tooltip" title="{{ translate('View', 'en', [defLang]) }}"
+					>
+						<span class="fa fa-eye text-primary"></span>
+					</a>
+		    		<a href="#" data-toggle="modal" data-target="#dell{{ mfile.id }}"
+						data-toggle="tooltip" title="{{ translate('Delete', 'en', [defLang]) }}"
+					>
+						<span class="fa fa-trash text-warning"></span>
+					</a>
+				</div>
+			</div>
+			{{ confirmModal([['dell' + str(mfile.id), translate('Warning : Delete a slide', 'en', [defLang]), translate("You are attempting to delete a slide which will not be retrievable , Are you sure of that ?", 'en', [defLang]), url_for('cust_app.slide_r', f_id=mfile.id)]], yes=translate('Yes', 'en', [defLang]), no=translate('No', 'en', [defLang])) }}
+	    	<div class="modal fade" id="preview{{ mfile.id }}">
+				<div class="modal-dialog">
+		    		<div class="modal-content">
+						<div class="modal-header">
+			    			<button type="button" class="close" data-dismiss="modal">&times;</button>
+								<h4 class="modal-title text-center ar1">{{ translate('Preview slide', 'en', [defLang]) }}</h4>
+						</div>
+						<div class="modal-body">
+			    			<div id="carousel-example{{ mfile.id }}" class="carousel slide" data-ride="carousel">
+								<ol class="carousel-indicators">
+				    				<li data-target="#carousel-example{{ mfile.id }}" data-slide-to="0"></li>
+								</ol>
+								<div class="carousel-inner">
+				    				<div class="item active">
+										{% if mfile.bname[:3]=="rgb" %}
+										<span class="img-responsive" style="background: {{ mfile.bname }};height: 400px; width: 1000px">
+										</span>
+										{% else %}
+										<img src="{{ url_for('static', filename='multimedia/'+mfile.bname) }}" class="img-responsive">
+										{% endif %}
+										<div class="carousel-caption">
+					    					<h2 style="color: {{ mfile.hcolor }}; font-family: {{ mfile.hfont }}; size: {{ mfile.hsize }}; background: {{ mfile.hbg }};">{{ mfile.title }}</h2>
+					    					<p style="color: {{ mfile.tcolor }}; font-family: {{ mfile.tfont }}; size: {{ mfile.tsize }}; background: {{ mfile.hbg }};">{{ mfile.subti }}</p>
+										</div>
+				    				</div>
+								</div>
+			    			</div>
+						</div>
+						<div class="modal-footer">
+			    			<button type="button" class="close btn btn-md btn-danger pull-right" data-dismiss="modal">{{ translate('Exit', 'en', [defLang]) }}</button>
+						</div>
+		    		</div>
+				</div>
+	    	</div>
+	    	{% endfor %}
+			{% endif %}
+			{{ spacer([translate('No slides exist to display', 'en', [defLang]), len(slides)]) }}
+		</div>
+        <div class="panel-footer text-center">
+			{{ panelFooter([[[translate('Total slides', 'en', [defLang]), mmm.count()], [translate('Image slides', 'en', [defLang]), sm], [translate('Colored slides', 'en', [defLang]), mmm.filter_by(ikey=00).count()]]], True, toWarn=translate('Image slides', 'en', [defLang])) }}
+	    	<div class="row text-center">
+				{{ macros.pagination_widget(pagination, '.slideshow') }}
+	    	</div>
+        </div>
+    </div>
+</div>
+
+{{ confirmModal([['dall', translate('Warning : Delete all', 'en', [defLang]), translate("You are attempting to delete all slides which will not be retrievable, Are you sure of that ?", 'en', [defLang]), url_for('cust_app.slide_r', f_id=00)]], yes=translate('Yes', 'en', [defLang]), no=translate('No', 'en', [defLang])) }}
+<div class="modal fade" id="fss">
+    <div class="modal-dialog">
+		<div class="modal-content">
+	    	<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal">&times;</button>
+    			<h4 class="modal-title text-center ar1">{{ translate('Preview all slides', 'en', [defLang]) }}</h4>
+      		</div>
+	    	<div class="modal-body">
+				{% if mmm.count() == 0 %}
+					<h1 class="text text-center text-danger">{{ translate('No slides created to be displayed', 'en', [defLang]) }}</h1>
+				{% else %}
+				<div id="myCarousel" class="carousel slide" data-ride="carousel" data-interval="{{ sli.rotation }}">
+		    		<!-- Indicators -->
+		    		<ol class="carousel-indicators">
+						{% for a in range(0, mmm.count()) %}
+						{% if a == 0 %}
+						<li data-target="#myCarousel" data-slide-to="{{ a }}" class="active"></li>
+						{% endif %}
+						<li data-target="#myCarousel" data-slide-to="{{ a }}"></li>
+						{% endfor %}
+		    		</ol>
+		    		<div class="carousel-inner">
+						{% for m in mmm %}
+						<div class="item {% if m.id == mmm.first().id %} active {% endif %}">
+							{% if m.bname[:3]=="rgb" %}
+							<span class="img-responsive" style="background: {{ m.bname }}; height: 600px; width: 1300p"></span>
+							{% else %}
+							<img style="height: 600px; width: 1300p" src="{{ url_for('static', filename='multimedia/'+m.bname) }}" alt="Slide {{ m.id }}" style="width:100%;" class="img-responsive">
+							{% endif %}
+							<div class="carousel-caption">
+			    				<h2 style="color: {{ m.hcolor }}; font-family: {{ m.hfont }} ; size: {{ m.hsize }}; background: {{ m.hbg }};">{{ m.title }}</h2>
+			    				<p style="color: {{ m.tcolor }}; font-family: {{ m.tfont }} size: {{ m.tsize }}; background: {{ m.hbg }};">{{ m.subti }}</p>
+							</div>
+						</div>
+						{% endfor %}
+						<!-- Left and right controls -->
+						{% if sli.navigation %}
+						<a class="left carousel-control" href="#myCarousel" data-slide="prev">
+			    			<span class="glyphicon glyphicon-chevron-left"></span>
+			    			<span class="sr-only">{{ translate('Previous', 'en', [defLang]) }}</span>
+						</a>
+						<a class="right carousel-control" href="#myCarousel" data-slide="next">
+			    			<span class="glyphicon glyphicon-chevron-right"></span>
+			    			<span class="sr-only">{{ translate('Next', 'en', [defLang]) }}</span>
+						</a>
+						{% endif %}
+					</div>
+		   		</div>
+		    	{% endif %}
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="close btn btn-md btn-danger pull-right" data-dismiss="modal">{{ translate('Exit', 'en', [defLang]) }}</button>
+			</div>
+		</div>
+	</div>
+</div>
+{% endblock %}

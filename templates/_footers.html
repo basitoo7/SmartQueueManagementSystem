@@ -1,0 +1,69 @@
+{% macro panelFooter(theModal=[],tri=False, toWarn=None, toGreen=None) %}
+    <!-- FIXME: Replace all panelFooter instances with the panel_footer, and remove it. -->
+    <!-- Receives [[['title', numbers()],..],..] -->
+    {% for theRows in theModal%}
+    <div class="row rmCurs">
+        {% for theRow in theRows %}
+        <div class="col-xs-12 {% if tri %} col-sm-4 {% else %} col-sm-6 {% endif %} h4 ar2 pb-1">
+            {{theRow[0]}} : <br /><br />
+            <span class="label label-{% if theRow[0] == toWarn %}danger{% elif theRow[0] == toGreen %}success{% else %}info{% endif %}">
+                <i> {{ theRow[1] }} </i>
+            </span>
+        </div>
+        {% endfor %}
+    </div>
+    {% endfor %}
+{% endmacro %}
+
+
+{% macro panel_footer(rows) %}
+    {% for row in rows %}
+    <div class="row rmCurs">
+        {% for col in row %}
+        {% set label = next(col, 'Label') %}
+        {% set value = next(col, 'Value') %}
+        {% set css_class = next(col, 'info') %}
+
+        <div class="col-xs-12 {% if row|length > 2 %} col-sm-4 {% else %} col-sm-6 {% endif %} h4 ar2 pb-1">
+            {{ translate(label, 'en', [defLang]) }}{{ brp*2 }}
+            <span class="label label-{{ css_class }}">
+                <i> {{ value }} </i>
+            </span>
+        </div>
+        {% endfor %}
+    </div>
+    {% endfor %}
+{% endmacro %}
+
+
+{% macro spacer(theModal=[]) %}
+    <!-- Receives ['message', number()] -->
+    {% if theModal[1] <= 0 %}
+    <div class="well text-center rmCurs">
+        <p class="pt-10"></p>
+        <h3 class="text-danger mt-10 mb-10">{{ theModal[0] }}</h3>
+        <p class="pb-10"></p>
+    </div>
+    {% elif theModal[1] <= 1 %}
+    <p class="pb-10"></p>
+    <p class="pb-10"></p>
+    <p class="pb-10"></p>
+    {% elif theModal[1] <= 3 %}
+      <p class="pb-10"></p>
+      <p class="pb-10"></p>
+    {% elif theModal[1] <= 5 %}
+    <p class="pb-10"></p>
+    <p class="pb-5"></p>
+    {% endif %}
+{% endmacro %}
+
+{% macro touchFooter(touch='No tasks created yet') %}
+<div class="row vertical-center ar1">
+    <div class="col-md-12 hidden-sm hidden-xs pt-4 pb-4 text-center text-center well rmCurs">
+      <h1 class="text-warning ar-1 text-strong" style="font-size: 400%;">{{ touch }}</h1>
+    </div>
+    <div class="col-xs-12 hidden-md hidden-lg hidden-xl text-center well rmCurs">
+      <h1 class="text-warning ar1 text-strong">{{ touch }}</h1>
+    </div>
+</div>
+{% endmacro %}

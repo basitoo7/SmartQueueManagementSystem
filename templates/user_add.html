@@ -1,0 +1,77 @@
+<!-- This Source Code Form is subject to the terms of the Mozilla Public
+   - License, v. 2.0. If a copy of the MPL was not distributed with this
+   - file, You can obtain one at http://mozilla.org/MPL/2.0/. -->
+
+{% extends "base.html" %}
+{% block title %} FQM - {{ page_title  }} {% endblock %}
+
+{% block page_content %}
+{% from "_helpers.html" import render_field with context %}
+<script type='text/javascript'>
+$(document).ready(function () {
+	// adding hidden user roles reminders instead
+	var toShuffle = ['.admin', '.monitor', '.operator']
+	$(toShuffle[($('#role').val() - 1)]).removeClass('hide')
+	// to hide and display offices list when operator is selected and more than one office exist
+	if (parseInt('{{ offices_count }}') && $('#role').val() == 3) $('.offices').removeClass('hide')
+	$('#role').change(function () {
+		if ($('#role').val() == 3) $('.offices').removeClass('hide')
+		else $('.offices').addClass('hide')
+		toShuffle.forEach(function (item) { $(item).addClass('hide') })
+		$(toShuffle[($('#role').val() - 1)]).removeClass('hide')
+	})
+})
+</script>
+<div class="col-md-12">
+    <form method="POST" enctype="multipart/form-data" id="fm">
+		<div class="panel panel-default">
+	    	<div class="panel-heading text-center">
+				<h3 class="text-muted">
+		    		<strong>
+						{% if update %}
+						<span class="fa fa-pencil"></span>
+						{{ translate('Update user', 'en', [defLang]) }}
+						{% else %}
+						<span class="fa fa-plus"></span>
+						{{ translate('Add new user', 'en', [defLang]) }}
+						{% endif %}
+		    		</strong>
+				</h3>
+	    	</div>
+	  		<div class="panel-body">
+      			<p class="pt-3"></p>
+				{{ form.csrf_token }}
+				{{ render_field(form.name, class="form-control") }}
+				{{ render_field(form.password, class="form-control") }}
+				{% if offices_count == 0 %}
+				<p class="h4 ar2 mt-2 mb-2 text-center text-warning">
+					| Monitor: {{ translate('the role is not enabled, it will be enabled once you add a new office', 'en', [defLang]) }}. |
+				</p>
+				{% endif %}
+				{{ render_field(form.role, class="form-control") }}
+		  		<p class="h3 ar2 mt-2 mb-2 text-center text-muted admin hide">
+		      		|  Admin : {{ translate('has the permissions to access and monitor everything', 'en', [defLang]) }} |
+		  		</p>
+		  		<p class="h3 ar2 mt-2 mb-2 text-center text-muted monitor hide">
+		      		|  Monitor : {{ translate('has permissions to monitor and access everything except Administrate', 'en', [defLang]) }} |
+		  		</p>
+		  		<p class="h3 ar2 mt-2 mb-2 text-center text-muted operator hide">
+		    		| Operator : {{ translate('has limited permissions only to access and monitor the office assigned to', 'en', [defLang]) }} |
+		  		</p>
+		  		<div class='offices hide'>
+					{{ render_field(form.offices, class="form-control") }}
+				</div>
+				<p class="pb-5"></p>
+		  		<center>
+					{% if update %}
+					<button class='btn btn-md btn-danger'>{{ translate('Update user', 'en', [defLang]) }}</button>
+					{% else %}
+					<button class='btn btn-md btn-danger'>{{ translate('Add user', 'en', [defLang]) }}</button>
+					{% endif %}
+		  		</center>
+				<p class="pb-3"></p>
+	   		</div>
+		</div>
+    </form>
+</div>
+{% endblock %}

@@ -1,0 +1,143 @@
+<!-- This Source Code Form is subject to the terms of the Mozilla Public
+   - License, v. 2.0. If a copy of the MPL was not distributed with this
+   - file, You can obtain one at http://mozilla.org/MPL/2.0/. -->
+
+
+{% extends "base.html" %}
+{% block title %} FQM - {{ page_title  }} {% endblock %}
+
+{% from "_beloadingNotifier.html" import beloadingNotifier %}
+{% block head %}
+{{ super() }}
+{{ datepicker.loader() }}
+{{ beloadingNotifier(version, beload=False, release=translate("You are using an older version of FQM, a newer release is available on fqms.github.io", 'en', [defLang]), firefox=translate("You are not using Firefox browser, which this project is designed and most suited for.", 'en', [defLang])) }}
+{% endblock %}
+
+{%- from "sb_cust.html" import sb_cust with context %}
+{% block sidebar %}
+{{ sb_cust() }}
+{% endblock %}
+
+{% block page_content %}
+<div class="col-md-12">
+  <div class="panel panel-default">
+	  <div class="panel-heading text-center">
+	    <h3 class="text-muted"><strong>{{ translate('Customization', 'en', [defLang]) }}</strong></h3>
+	  </div>
+	  <div class="panel-body">
+	    <h4 class="text text-primary text-center ar2 mt-2">
+		    <strong>
+          {{ translate("Allowing the user to customize every bit of the interface, which the customer be confronted and interacts with. Every element style has the option to be customized with its font, color, size and background color. Via the simple navigation bar on the side each main component is displayed with its own customizable element listed under it.", 'en', [defLang]) }}
+		    </strong>
+	    </h4>
+	    <hr class='mb-4'>
+	    <div class="media">
+		    <span class="fa fa-4x fa-music text-muted media-object pull-left"></span>
+		    <div class="media-body">
+          <h4 class="text text-primary ar1">
+            <u>{{ translate('Multimedia', 'en', [defLang]) }} :</u>
+          </h4>
+		      <h4 class="text text-muted ar2 mb-1">
+            {{ translate("The place where all multimedia files meant to be uploaded to, for the purpose of later use in other components which has the option to incorporate the uploaded multimedia files like jpg backgrounds instead of statically colored backgrounds and wav audio files to be incorporated withe visual notification message as well as png images to attach a transparent logo to slides for example.", 'en', [defLang]) }}
+		      </h4>
+		    </div>
+	    </div>
+	    <div class="media">
+		    <a data-toggle="collapse" href="#dropdown-lvl1">
+		      <span class="fa fa-4x fa-desktop text-muted media-object pull-left"></span>
+		    </a>
+		    <div class="media-body">
+		      <h4 class="text text-primary ar1">
+            <a data-toggle="collapse" href="#dropdown-lvl1">
+              <u>{{ translate('Touch screen', 'en', [defLang]) }} :</u>
+            </a>
+            <span class="fa fa-mouse-pointer text-muted"></span>
+          </h4>
+		      <a data-toggle="collapse" href="#dropdown-lvl1">
+			      <h4 class="text text-muted ar2 mb-1">
+              {{ translate("It is the screen with-which the customer chooses any given task from a list of managed tasks, That will generate a unique ticket with each click and display a response notification. Touch screen purpose can go beyond that simple use with additional features been added or special templates been chosen.", 'en', [defLang]) }}
+			      </h4>
+		      </a>
+		    </div>
+	    </div>
+	    <div class="media">
+		    <a data-toggle="collapse" href="#dropdown-lvl2"><span class="fa fa-4x fa-television text-muted media-object pull-left"></span></a>
+		    <div class="media-body">
+			    <h4 class="text text-primary ar1">
+            <a data-toggle="collapse" href="#dropdown-lvl2">
+              <u>{{ translate('Display screen', 'en', [defLang]) }} :</u>
+            </a>
+            <span class="fa fa-mouse-pointer text-muted"></span>
+          </h4>
+			    <a data-toggle="collapse" href="#dropdown-lvl2">
+			      <h4 class="text text-muted ar2 mb-1">
+              {{ translate("It is the screen in which tickets are displayed in sequence of pulling, utilizing live feed with each ticket unique ticket generated from the touch screen by user will be organized under waiting tickets and each ticket pulled by an operator of any given office will be positioned in current ticket. Each element of them will have its unique style to indelicate to the viewer the difference in-between each.", 'en', [defLang]) }}
+			      </h4>
+			    </a>
+		    </div>
+	    </div>
+      {% if vtrue == 2 %}
+	    <div class="media">
+		    <a data-toggle="collapse" href="#dropdown-lvl3"><span class="fa fa-4x fa-film text-muted media-object pull-left"></span></a>
+		    <div class="media-body">
+		      <h4 class="text text-primary ar1">
+            <a data-toggle="collapse" href="#dropdown-lvl3">
+              <u>{{ translate('Display Slideshow', 'en', [defLang]) }} :</u>
+            </a>
+            <span class="fa fa-mouse-pointer text-muted"></span>
+          </h4>
+		      <a data-toggle="collapse" href="#dropdown-lvl3">
+			      <h4 class="text text-muted ar2 mb-1">
+			        {{ translate("Slideshow is an added element to the display screen in which the admin is able to add any given amount of slides with their captions for any purpose wether to advertise or to display more info. Display Slideshow will help to manage slide components  effectively and easily.", 'en', [defLang]) }}
+			      </h4>
+		      </a>
+		    </div>
+	    </div>
+      {% endif %}
+      {% if strue == 2 %}
+      <div class="media">
+        <span class="fa fa-4x fa-video-camera text-muted media-object pull-left"></span>
+        <div class="media-body">
+          <h4 class="text text-primary ar1">
+            <u>{{ translate('Display Video', 'en', [defLang]) }} :</u>
+          </h4>
+            <h4 class="text text-muted ar2 mb-1">
+              {{ translate("Video is an added element to the display screen in which the admin is able to add any uploaded video to multimedia for any purpose wether to advertise or to display more info. Display video will help to configure video settings effectively and easily.", 'en', [defLang]) }}
+            </h4>
+        </div>
+      </div>
+      {% endif %}
+      <div class="media">
+        <span class="fa fa-4x fa-print text-muted media-object pull-left"></span>
+        <div class="media-body">
+          <h4 class="text text-primary ar1"><u>{{ translate('Tickets', 'en', [defLang]) }} :</u>
+          </h4>
+          <h4 class="text text-muted ar2 mb-1">
+            {{ translate("Here where the type of tickets which the system will generate is set, two options currently are possible 1.Registered, in-which the customer inserts full name after choosing the specific task, so the system later on will announce the inserted name whenever it is due. 2.Printed the typical queue numbered printed ticket, that requires usb printer to be connected, with which it is configured and set on Tickets too .", 'en', [defLang]) }}
+          </h4>
+        </div>
+      </div>
+      <div class="media">
+        <span class="fa fa-4x fa-comment-o text-muted media-object pull-left"></span>
+        <div class="media-body">
+          <h4 class="text text-primary ar1"><u>{{ translate('Aliases', 'en', [defLang]) }} :</u>
+          </h4>
+          <h4 class="text text-muted ar2 mb-1">
+            {{ translate("Alias : gives you the ability to change the default naming of the main components into something relevant to your environment. Changes will effect printed, registered tickets and text-to-speech announcements.", 'en', [defLang]) }}
+          </h4>
+        </div>
+      </div>
+      <div class="media">
+        <span class="fa fa-4x fa-cog text-muted media-object pull-left"></span>
+        <div class="media-body">
+          <h4 class="text text-primary ar1"><u>{{ translate('Background tasks', 'en', [defLang]) }} :</u>
+          </h4>
+          <h4 class="text text-muted ar2 mb-5">
+            {{ translate("Background tasks : gives you the ability to to automate some predefined repetitive but needed processes. Changes on the settings will effect ongoing background tasks, and will reset them accordingly.", 'en', [defLang]) }}
+          </h4>
+        </div>
+      </div>
+    </div>
+	</div>
+</div>
+{% endblock %}

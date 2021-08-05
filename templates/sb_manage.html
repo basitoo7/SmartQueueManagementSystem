@@ -1,0 +1,154 @@
+<!-- This Source Code Form is subject to the terms of the Mozilla Public
+   - License, v. 2.0. If a copy of the MPL was not distributed with this
+   - file, You can obtain one at http://mozilla.org/MPL/2.0/. -->
+
+{% macro sb_manage() %}
+<div class="col-md-2 sidebar">
+    <div class="row">
+	<!-- uncomment code for absolute positioning tweek see top comment in css -->
+	<div class="absolute-wrapper"> </div>
+	<!-- Menu -->
+	<div class="side-menu">
+	    <nav class="navbar navbar-default" style="font-size: large;" role="navigation">
+		<!-- Main Menu -->
+		<div class="side-menu-container">
+		    <ul class="nav navbar-nav">
+			{% if getattr(current_user, 'role_id', None) != 3 or settings.single_row %}
+			<li id="da1" >
+			    <a href="{{ url_for('manage_app.search') }}">
+				<span class="fa fa-search"></span>
+				{{ translate('Search', 'en', [defLang]) }}
+			    </a>
+			</li>
+			<li id="da2" >
+			    <a href="{{ url_for('manage_app.all_offices') }}">
+				<span class="fa fa-ticket"></span>
+				{{ translate('All tickets', 'en', [defLang]) }}
+					{% if not settings.single_row %}
+					<span class="badge pull-right">
+						{{ Serial.query.filter_by(p=False).count() }}
+					</span>
+					{% endif %}
+			    </a>
+			</li>
+			<li  id="da5" >
+				<a href="{{ url_for('core.pull') }}">
+						<span class="fa fa-{% if settings.single_row %}plus{% else %}minus{% endif %}"></span>
+						{{ translate('Generate a ticket' if settings.single_row else 'Pull a ticket', 'en', [defLang]) }}
+						{% if Serial.query.filter_by(p=False).count() >= 1 %}
+						<span class="badge pull-right">
+							{{ Serial.query.filter_by(p=False).count() }}
+						</span>
+						{% endif %}
+				</a>
+			</li>
+			{% if not settings.single_row %}
+			<li id="da3">
+			    <a href="{{ url_for('manage_app.office_a') }}">
+				<span class="fa fa-plus"></span>
+				{{ translate('Add new office', 'en', [defLang]) }}
+			    </a>
+			</li>
+			{% if offices.count() > 1 %}
+			<li id="da6" >
+			    <a href="{{ url_for('manage_app.common_task_a') }}">
+				<span class="fa fa-plus"></span>
+				{{ translate('Add common task', 'en', [defLang]) }}
+			    </a>
+			</li>
+			{% endif %}
+			{% endif %}
+			<li id="da4" >
+				<a onclick="announce()">
+				<span class="glyphicon glyphicon-refresh"></span>
+				{{ translate('Repeat announcement', 'en', [defLang]) }}
+				</a>
+			</li>
+			{% endif %}
+			<!-- Dropdown--> 
+			{% if not settings.single_row %}
+			{% for office in offices %}
+			{% if getattr(current_user, 'role_id', None) != 3 or checkId(current_user.id, office.operators) %}
+			<li class="panel panel-default da{{ office.id+3 }} {% if ar %} ar1 {% endif %}" id="dropdown">
+			    <a data-toggle="collapse" href="#dropdown-lvl{{ office.id }}">
+				<span class="fa fa-desktop"></span>
+				{{ loop.index }}.{{ translate('Office', 'en', [defLang]) }}  {{ office.prefix }}{{ office.name }}
+				<span class="caret"></span>
+				<!-- To solve counting all the common and non-common tasks tickets -->
+				{% set total_tickets = Serial.all_office_tickets(office.id).filter_by(p=False).count() %}
+				{% if total_tickets > 0 %}
+				<span class="badge pull-right">
+					{{ total_tickets }}
+				</span>
+				{% endif %}
+			    </a>
+			    <!-- Dropdown level 1 -->
+			    <div id="dropdown-lvl{{ office.id }}" class="panel-collapse collapse">
+				<div class="panel-body">
+				    <ul class="nav navbar-nav">
+					<li  id="t1{{ office.id }}" >
+					    <a href="{{ url_for('manage_app.offices', o_id=office.id) }}">
+						<span class="fa fa-ticket"></span>
+						{{ translate('All tickets', 'en', [defLang]) }}
+					    </a>
+					</li>
+					{% if getattr(current_user, 'role_id', None) == 3 %}
+					<li id="tr{{ office.id }}" >
+						<a onclick="announce()">
+						<span class="glyphicon glyphicon-refresh"></span>
+						{{ translate('Repeat announcement', 'en', [defLang]) }}
+						</a>
+					</li>
+					{% endif %}
+					<li  id="to{{ office.id }}" >
+						<a href="{{ url_for('administrate.operators', t_id=office.id) }}">
+						<span class="fa fa-user"></span>
+						{{ translate('Operators', 'en', [defLang]) }}
+						<span class="badge pull-right">
+							{{ operators.filter_by(office_id=office.id).count() }}
+						</span>
+						</a>
+					</li>
+			<!-- Fix: pulling tickets by task_id instead of office_id -->
+			<!-- Will include pull ticket under task instead of all tickets, fast and simple -->
+					<li  id="t3{{ office.id }}" >
+					    <a href="{{ url_for('manage_app.task_a', o_id=office.id) }}">
+						<span class="fa fa-plus"></span>
+						{{ translate('Add new task', 'en', [defLang]) }}
+					    </a>
+					</li>
+					{% for task in tasks.in_offices(office.id) %}
+					<li id="tt{{office.id }}{{ task.id }}" >
+					    <a href="{{ url_for('manage_app.task', o_id=task.id, ofc_id=office.id) }}">
+						{{ loop.index }}.  {{ task.name }}
+					    </a>
+					</li>
+					<!-- Pull is shifted to here -->
+					<li  id="tf{{ office.id }}" >
+						<a href="{{ url_for('core.pull', o_id=task.id, ofc_id=office.id) }}">
+								<span class="fa fa-minus"></span>
+								{{ translate('Pull a ticket', 'en', [defLang]) }}
+								{% set task_tickets = Serial.all_task_tickets(office.id, task.id).filter_by(p=False).count() %}
+								{% if task_tickets >= 1 %}
+								<span class="badge pull-right">
+									{{ task_tickets }}
+								</span>
+								{% endif %}
+						</a>
+					</li>
+					{% endfor %}
+				    </ul>
+				</div>
+			    </div>
+			</li>
+
+			{% endif %}
+			{% endfor %}
+			{% endif %}
+		    </ul>
+		</div><!-- /.navbar-collapse -->
+	    </nav>
+	</div>
+    </div>
+</div>
+{% endmacro %}

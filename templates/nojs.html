@@ -1,0 +1,67 @@
+<!-- This Source Code Form is subject to the terms of the Mozilla Public
+   - License, v. 2.0. If a copy of the MPL was not distributed with this
+   - file, You can obtain one at http://mozilla.org/MPL/2.0/. -->
+
+<html>
+<title>{% block title %} FQM - {{ page_title }} {% endblock %}</title>
+
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="X-UA-compatible" content="IE=edge">
+<link href="{{ url_for('static', filename='css/gfonts.css') }}" rel="stylesheet">
+<link href="{{ url_for('static', filename='backstrap/css/bootstrap.min.css') }}" rel="stylesheet">
+<link href="{{ url_for('static', filename='css/bootstrap-theme.min.css') }}" rel="stylesheet">
+<link href="{{ url_for('static', filename='css/font-awesome.min.css') }}" rel="stylesheet">
+<link href="{{ url_for('static', filename='css/main.css') }}" rel="stylesheet">
+<link href="{{ url_for('static', filename='css/spacing.css') }}" rel="stylesheet">
+<link rel="shortcut icon" href="{{ url_for('static', filename='images/favicon.png') }}" type="image/x-icon">
+<link rel="icon" href="{{ url_for('static', filename='images/favicon.png') }}" type="image/x-icon">
+<link href="{{ url_for('static', filename='css/afade.css') }}" rel="stylesheet">
+<script src="{{ url_for('static', filename='backstrap/jquery.min.js') }}"></script>
+<script src="{{ url_for('static', filename='backstrap/js/bootstrap.min.js') }}"></script>
+<style>
+ body {
+     background-color: black;
+     background-image: url('/static/images/dbg.jpg');
+     background-repeat: no-repeat;
+     background-attachment: fixed;
+     background-position: center;
+     background-size: cover;
+ }
+
+</style>
+</head>
+
+<body>
+<div class="cover vertical-center">
+    <div class="container">
+        <div class="row">
+            <div class="col-xs-12 text-center snb coat pt-2 pb-2" style="background: rgba(0,0,0,0.9);">
+                <a href="https://www.mozilla.org/en-US/firefox/new/" class='lightit' target="_blank">
+                  <img src="{{ url_for('static', filename='images/nojs.png') }}" class="image-responsive mt-3" id="blogo" width="35%">
+                  <h1 class="text text-danger mb-2" >Javascript {{ translate('is disabled', 'en', [defLang]) }}</h1>
+                  <h3 class='text text-muted i mb-2'>
+                      <a href="{{ url_for('language_switch', language='en') }}">English</a> | 
+                      <a href="{{ url_for('language_switch', language='it') }}">Italian</a> | 
+                      <a href="{{ url_for('language_switch', language='es') }}">Spanish</a> | 
+                      <a href="{{ url_for('language_switch', language='fr') }}">French</a> | 
+                      <a href="{{ url_for('language_switch', language='ar') }}">Arabic</a>
+                  </h3>
+		           <h3 class="text text-warning mt-2 mb-2">
+                        {{ translate("This application relays heavily on Javascript, it seems you have it disabled, for some reason : you might be using an old out-dated browser or might be using a browser that intentionally does not support Javascript. Browsing this application without Javascript enabled will result in unintentional dysfunctions.", 'en', [defLang]) }}
+		          </h3>
+	             	<h3 class="text text-muted mb-3">
+	             	    <u>
+                            {{ translate("So we recommend you to enable Javascript or to use an equipped with Javascript browser like Firefox.", 'en', [defLang]) }}
+                        </u>
+	             	</h3>
+	             	<a class="btn btn-lg btn-warning ar2 mb-4" href="{{ url_for('nojs', enabled_js=1) }}">
+	             	    <strong>{{ translate('Sure, I enabled Javascript', 'en', [defLang]) }}</strong>
+	             	</a>
+            </div>
+	    </div>
+    </div>
+</div>
+</body>
+</html>

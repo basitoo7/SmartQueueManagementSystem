@@ -1,0 +1,107 @@
+<!-- This Source Code Form is subject to the terms of the Mozilla Public
+   - License, v. 2.0. If a copy of the MPL was not distributed with this
+   - file, You can obtain one at http://mozilla.org/MPL/2.0/. -->
+
+{% extends "base.html" %}
+{% block title %} FQM - {{ page_title  }} {% endblock %}
+
+{%- from "sb_cust.html" import sb_cust with context %}
+{% block sidebar %}
+{{ sb_cust() }}
+{% endblock %}
+
+{% block head %}
+{{ super() }}
+<script>
+$(document).ready(function () {
+  var toRemove = function (theList, toAdd) {
+    theList = theList || []
+    toAdd = toAdd || false
+    theList.forEach(function (item) {
+      toAdd ? $(item).addClass('hide') : $(item).removeClass('hide')
+    })
+  }
+  if ($('#langu option:selected').val() !== 'en' && $('#kind option:selected').val() === '2') toRemove(['#warn'])
+  $('#kind option:selected').val() === '2' ? toRemove(['#warn2', '#warn3', '.tohide', '.printed']) : toRemove(['.nhide', '.registered'])
+  $('#langu').change(function () {
+    $('#langu option:selected').val() !== 'en' ? toRemove(['#warn']) : toRemove(['#warn'], true)
+  })
+  $('#kind').change(function () {
+    if ($('#kind option:selected').val() === '2') {
+      toRemove(['#warn2', '#warn3', '.tohide', '.printed'])
+      toRemove(['.nhide', '.registered'], true)
+      if ($('#langu option:selected').val() !== 'en') toRemove(['#warn'])
+    } else {
+      toRemove(['#warn2', '#warn3', '.tohide', '.printed'], true)
+      toRemove(['.nhide', '.registered'])
+    }
+  })
+})
+</script>
+{% endblock %}
+
+{% block page_content %}
+{% from "_helpers.html" import render_field with context %}
+{% from "_modals.html" import qrModal %}
+<div class="col-md-12">
+    <form method="POST" enctype="multipart/form-data">
+	    <div class="panel panel-default" id="p1">
+	      <div class="panel-heading text-center">
+		      <h3 class="text-muted">
+            <span class="fa fa-print"></span>
+            <strong> {{ translate('Tickets', 'en', [defLang]) }} </strong>
+          </h3>
+	      </div>
+	      <div class="panel-body">
+		      {{ form.csrf_token }}
+          <center>
+            <a data-toggle="modal" data-target="#mym">
+              <img class="img-responsive img-thumbnail mt-4 mb-2 pic" id="map" width="40%" src="{{ url_for('static', filename='images/manage_task.jpg') }}">
+            </a>
+		        <p class="h3 ar2 mt-1 mb-4 text-muted hide registered">
+		          | {{ translate("Registered : allows the customer to register his name and that will be used to refer by, instead of a typical printed ticket", 'en', [defLang]) }} |
+		        </p>
+            <p class="h3 ar2 mb-4 mt-1 text-muted hide printed">
+              | {{ translate('Printed : the typical printed unique customer ticket number', 'en', [defLang]) }} |
+            </p>
+          </center>
+		      {{ render_field(form.kind, class="form-control touch") }}
+          <h4 id="warn2" class="text-center ar2 mt-3  text-danger hide">
+            | {{ translate('Reminder: to use printed tickets you must assign available printer', 'en', [defLang]) }} |
+          </h4>
+          <h4 id="warn3" class="text-center ar2 mt-1 text-danger hide">
+            | {{ translate('Reminder: Only supported printers currently are usb printers', 'en', [defLang]) }} |
+          </h4>
+          <div class="nhide hide">
+            {{ render_field(form.value, class="form-control") }}
+          </div>
+          <div class="tohide hide">
+            {{ render_field(form.langu, class="form-control") }}
+          </div>
+          <h4 id="warn" class="text-center ar2 mb-3 mt-3 text-danger hide">
+            | {{ translate('Reminder : printing with languages other than English , is still under testing and might cause unintended errors', 'en', [defLang]) }} |
+          </h4>
+          <div class="tohide hide">
+  		      {{ render_field(form.printers, class="form-control") }}
+          </div>
+          <div class="tohide hide">
+            {{ render_field(form.scale, class="form-control") }}
+          </div>
+          <div class="tohide hide">
+            {{ render_field(form.header, class="form-control") }}
+          </div>
+          <div class="tohide hide">
+            {{ render_field(form.sub, class="form-control") }}
+          </div>
+		    <center>
+          <p class="pt-5"></p>
+          <button class="btn btn-md btn-danger" type="submit">{{ translate('Apply', 'en', [defLang]) }}</button>
+          <p class="pb-2"></p>
+		    </center>
+	    </div>
+	  </div>
+  </form>
+</div>
+
+{{ qrModal([['mym', translate('Tickets template', 'en', [defLang]), url_for('static', filename='images/manage_map.jpg')]], close=translate('Exit', 'en', [defLang])) }}
+{% endblock %}

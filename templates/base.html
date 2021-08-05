@@ -1,0 +1,386 @@
+<!-- This Source Code Form is subject to the terms of the Mozilla Public
+   - License, v. 2.0. If a copy of the MPL was not distributed with this
+   - file, You can obtain one at http://mozilla.org/MPL/2.0/. -->
+
+{% from "_beloadingNotifier.html" import beloadingNotifier %}
+{% from "_wallpapers.js" import wallpapers %}
+<html>
+    <head>
+        <title>{% block title %} FQM {% endblock %}</title>
+        {% block head %}
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta http-equiv="X-UA-compatible" content="IE=edge">
+        <meta id="playlist" data-playlist="{{ snb }}">
+        <link href="{{ url_for('static', filename='backstrap/css/bootstrap.min.css') }}" rel="stylesheet">
+        <link href="{{ url_for('static', filename='css/bootstrap-theme.min.css') }}" rel="stylesheet">
+        <link href="{{ url_for('static', filename='backstrap/css/bootstrap-theme.min.css.map') }}" rel="stylesheet">
+        <link href="{{ url_for('static', filename='css/font-awesome.min.css') }}" rel="stylesheet">
+        <link href="{{ url_for('static', filename='css/neede.css') }}" rel="stylesheet">
+        <link href="{{ url_for('static', filename='css/main.css') }}" rel="stylesheet">
+        <link href="{{ url_for('static', filename='css/spacing.css') }}" rel="stylesheet">
+        <link rel="shortcut icon"
+            href="{{ url_for('static', filename='images/favicon.ico') }}"
+        >
+        <link href="{{ url_for('static', filename='css/gfonts.css') }}" rel="stylesheet">
+        <script src="{{ url_for('static', filename='wallpapers.min.js') }}"></script>
+        <script src="{{ url_for('static', filename='backstrap/jquery.min.js') }}"></script>
+        <script src="{{ url_for('static', filename='jquery-ui.min.js') }}"></script>
+        <script src="{{ url_for('static', filename='backstrap/js/bootstrap.min.js') }}"></script>
+        {{ moment.include_moment(local_js='/static/backstrap/moment-with-locales.min.js') }}
+        {{ moment.locale(defLang) }}
+        <script src="{{ url_for('static', filename='sidebar.js') }}"></script>
+        <script src="{{ url_for('static', filename='disciple.js') }}"></script>
+        <script src="{{ url_for('static', filename='extFunctions.js') }}"></script>
+        {{ beloadingNotifier(version, beload=False, release=translate("You are using an older version of FQM, a newer release is available on fqms.github.io", 'en', [defLang]), firefox=translate("You are not using Firefox browser, which this project is designed and most suited for.", 'en', [defLang]), notifier=notifications) }}
+        <script type="text/javascript">
+            window.onload = function () {
+                try {
+                    {% if dropdown %} $("{{ dropdown }}").collapse('show') {% endif %} // sidebar collapse for all
+                    {% if hash %} $("{{ hash }}").addClass('active') {% endif %} // activating item regardless of uniqueness activation
+                    {% if navbar %} $("{{ navbar }}").addClass("active") {% endif %} // activating navbar category
+                    {% if getattr(current_user, 'role_id', None) == 3 %}
+                        $('#cls').collapse('show')
+                        $('#dropdown-lvl{{ ooid }}').collapse('show')
+                    {% endif %}
+                } catch(err) { console.log(err) }
+
+                if (!sessionStorage.toClear) {
+                    localStorage.redWallIndex = undefined
+                    sessionStorage.toClear = 'yes'
+                }
+                {{ wallpapers('.widw', enable_reddit=settings.visual_effects) }}
+                disciple({
+                    identifier: '.disciple',
+                    msg_text: "{{ translate('You made changes on the previous form without submitting. Do you wish to restore it ?', 'en', [defLang]) }}",
+                    restore_text: "{{ translate('Now', 'en', [defLang]) }}",
+                    later_text: "{{ translate('Later', 'en', [defLang]) }}",
+                    forget_text: "{{ translate('Forget it', 'en', [defLang]) }}",
+                    restoring_text: "{{ translate('Restoring the form', 'en', [defLang]) }}",
+                    msg_classes: ['ar1'],
+                    restore_classes: ['ar1', 'btn', 'lightit'],
+                    later_classes: ['ar1', 'btn', 'lightit'],
+                    forget_classes: ['ar1', 'btn', 'btn-danger', 'lightit'],
+                    restoring_classes: ['ar1']
+                })
+                {% if not settings.visual_effects %}
+                // Remove spinning animation if effects setting is disabled
+                $('.fa-spin').removeClass('fa-spin')
+                {% endif %}
+            }
+        </script>
+        {% endblock %}
+    </head>
+    <body>
+        <noscript>
+            /* checking if nojs is on */
+            <style>html{display:none;}</style>
+            <meta http-equiv="refresh" content="0.0;url=/nojs/0">
+        </noscript>
+        <div class="widw">
+            {% if settings.visual_effects %}
+                <center><img class="img-responsive mb-1"  style="width: 30%;" src="{{ url_for('static', filename='images/logo.png') }}" alt="Logo"></center>
+            {% endif %}
+            <nav class="navbar navbar-inverse">
+    	        <div class="container-fluid">
+    	            <div class="navbar-header">
+    		            <button type="button" class="navbar-toggle navbar-toggle-sidebar collapsed">
+    		                <span class="sr-only">Toggle</span>
+    		                <span class="fa fa-1x fa-toggle-off"></span>
+    		            </button>
+    		            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+    		                <span class="sr-only">Toggle navigation</span>
+    		                <span class="icon-bar"></span>
+    		                <span class="icon-bar"></span>
+    		                <span class="icon-bar"></span>
+    		            </button>
+    		            <a class="navbar-brand" href="{{ url_for('core.root') }}">
+                            <img src="{{ url_for('static', filename='images/favicon.png') }}" style="width: 28%" />
+                        </a>
+    	            </div>
+    	            <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+    		            <ul class="nav navbar-nav navbar-left">
+                            <li id="snb1"><a href="{{ url_for('manage_app.manage') }}">{{ translate('Management', 'en', [defLang]) }}</a></li>
+                            {% if getattr(current_user, 'role_id', None) == 1 %}
+    		                    <li id="snb2"><a href="{{ url_for('cust_app.customize') }}">{{ translate('Customization', 'en', [defLang]) }}</a></li>
+                            <li class="dropdown" id='snb3'>
+    			                <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+                                    {{ translate('Administration', 'en', [defLang]) }}
+                                    <span class="caret"></span>
+                                </a>
+    			                <ul class="dropdown-menu" role="menu">
+    			                    <li class="dropdown-header">( {{ translate('Users', 'en', [defLang]) }} )</li>
+    			                    <li>
+    				                    <a href="{{ url_for('administrate.users') }}">
+    				                        <span class="fa fa-users"></span>
+    				                        {{ translate('All users', 'en', [defLang]) }}
+                                        </a>
+    			                    </li>
+    			                    <li>
+    				                    <a href="{{ url_for('administrate.user_a') }}">
+    				                        <span class="fa fa-user"></span>
+    				                        {{ translate('Add user', 'en', [defLang]) }}
+                                        </a>
+                                    </li>
+                                    <li class="dropdown-header">( {{ translate('Database', 'en', [defLang]) }} )</li>
+                                    <li>
+                                        <a href="{{ url_for('administrate.csv') }}">
+                                            <span class="fa fa-database"></span>
+                                            {{ translate('Export ', 'en', [defLang]) }} CSV
+                                        </a>
+                                    </li>
+                                    <li class="dropdown-header">( {{ translate('API', 'en', [defLang]) }} )</li>
+    			                    <li>
+    				                    <a href="/api/v1" target="_blank">
+    				                        <span class="fa fa-external-link"></span>
+    				                        {{ translate('API documentation', 'en', [defLang]) }}
+                                        </a>
+    			                    </li>
+    			                    <li>
+    				                    <a href="{{ url_for('administrate.auth_tokens') }}">
+    				                        <span class="fa fa-key"></span>
+    				                        {{ translate('Authentication tokens', 'en', [defLang]) }}
+                                        </a>
+    			                    </li>
+                                    {% if current_user.id == 1 %}
+                                    <li class="dropdown-header">( {{ translate('Flag Settings', 'en', [defLang]) }} )</li>
+                                    <li>
+                                        <a href="{{ url_for('core.settings', setting='strict_pulling', togo=current_path) }}">
+                                            <span class="fa fa-lock"></span>
+                                            {{ translate('Strict Tasks Pulling', 'en', [defLang]) }} ({{ translate('Disable' if settings.strict_pulling == True else 'Enable', 'en', [defLang]) }})
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a href="{{ url_for('core.settings', setting='single_row', togo=current_path) }}">
+                                            <span class="fa fa-arrow-up"></span>
+                                            {{ translate('Single Row Queuing', 'en', [defLang]) }} ({{ translate('Disable' if settings.single_row == True else 'Enable', 'en', [defLang]) }})
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a href="{{ url_for('core.settings', setting='visual_effects', togo=current_path) }}">
+                                            <span class="fa fa-eye"></span>
+                                            {{ translate('Visual Effects', 'en', [defLang]) }} ({{ translate('Disable' if settings.visual_effects == True else 'Enable', 'en', [defLang]) }})
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a href="{{ url_for('core.settings', setting='notifications', togo=current_path) }}">
+                                            <span class="fa fa-bell"></span>
+                                            {{ translate('Notifications', 'en', [defLang]) }} ({{ translate('Disable' if settings.notifications == True else 'Enable', 'en', [defLang]) }})
+                                        </a>
+                                    </li>
+                                    {% if unix %}
+                                    <li>
+                                        <a href="{{ url_for('core.settings', setting='lp_printing', togo=current_path) }}">
+                                            <span class="fa fa-print"></span>
+                                            {{ translate('Alternative printer driver', 'en', [defLang]) }} ({{ translate('Disable' if settings.lp_printing == True else 'Enable', 'en', [defLang]) }})
+                                        </a>
+                                    </li>
+                                    {% endif %}
+                                    {% endif %}
+                                </ul>
+                            </li>
+    		                {% endif %}
+                        </ul>
+                        <ul class="nav navbar-nav navbar-right">
+    		                <li class="dropdown">
+    			                <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+    			                    {{ translate('Screens', 'en', [defLang]) }}
+                                    <span class="caret"></span>
+                                </a>
+    			                <ul class="dropdown-menu" role="menu">
+                                    <li class="dropdown-header">( {{ translate('General Screens', 'en', [defLang]) }} )</li>
+    			                    <li>
+    				                    <a href="{{ url_for('core.display') }}" target="_blank">
+    				                        <span class="fa fa-television"></span>
+                                            {{ translate('Display screen', 'en', [defLang]) }}
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a href="#" data-toggle="modal" data-target="#display_qr">
+                                            <span class="fa fa-television"></span>
+                                            {{ translate('Display screen', 'en', [defLang]) }} (QR Code)
+                                        </a>
+                                    </li>
+                                    {% if not settings.single_row %}
+                                    <li>
+    				                    <a href="{{ url_for('core.touch', a=0) }}" target="_blank">
+    				                        <span class="fa fa-desktop"></span>
+                                            {{ translate('Touch screen', 'en', [defLang]) }}
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a href="#" data-target="#touch_qr" data-toggle="modal">
+                                            <span class="fa fa-desktop"></span>
+                                            {{ translate('Touch screen', 'en', [defLang]) }} (QR Code)
+                                        </a>
+                                    </li>
+                                    {% for office in offices %}
+                                    <li class="dropdown-header">( {{ office.display_text }} )</li>
+                                    <li>
+    				                    <a href="{{ url_for('core.touch', a=0, office_id=office.id) }}" target="_blank">
+    				                        <span class="fa fa-desktop"></span>
+                                            {{ translate('Touch screen', 'en', [defLang]) }}
+                                        </a>
+                                    </li>
+    			                    <li>
+    				                    <a href="{{ url_for('core.display', office_id=office.id) }}" target="_blank">
+    				                        <span class="fa fa-television"></span>
+                                            {{ translate('Display screen', 'en', [defLang]) }}
+                                        </a>
+                                    </li>
+                                    {% endfor %}
+                                    {% endif %}
+                                </ul>
+                            </li>
+    			            <li class="dropdown">
+    			                <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+    				                {{ current_user.name }}
+                                    <span class="caret"></span>
+                                </a>
+    			                <ul class="dropdown-menu" role="menu">
+    				                <li class="dropdown-header">
+    				                    ( {% if getattr(current_user, 'role_id', None) == 1 %} Administrator
+    				                    {% elif getattr(current_user, 'role_id', None) == 2 %} Monitor
+    				                    {% else %} Operator {% endif %} )
+    				                </li>
+    				                {% if current_user.id != 1 and getattr(current_user, 'role_id', None) == 1 %}
+    				                    <li class="">
+                                            <a href="{{ url_for('administrate.user_u', u_id=current_user.id) }}">
+    				                            <span class="fa fa-pencil"></span>
+                                                {{ translate('Update ', 'en', [defLang]) }}
+                                            </a>
+    				                    </li>
+    				                {% endif %}
+                                    {% if current_user.id == 1 %}
+                                        <li class="">
+                                            <a href="{{ url_for('administrate.admin_u') }}">
+                                                <span class="fa fa-pencil"></span>
+                                                {{ translate('Update ', 'en', [defLang]) }} Admin
+                                            </a>
+                                        </li>
+                                    {% endif %}
+    				                <li>
+                                        <a href="{{ url_for('administrate.logout') }}">
+    				                        <span class="fa fa-sign-out"></span>
+                                            {{ translate('Logout', 'en', [defLang]) }}
+                                        </a>
+    				                </li>
+                                </ul>
+                            </li>
+                            <li class="dropdown">
+                                {% set languages = [['en', 'English'], ['it', 'Italian'], ['es', 'Spanish'], ['ar', 'Arabic'], ['fr', 'French']] %}
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+                                    {% for curLang in languages %}
+                                    {% if defLang == curLang[0] %} {{ curLang[1] }} {% endif %}
+                                    {% endfor %}
+                                    <span class="caret"></span>
+                                </a>
+                                <ul class="dropdown-menu" role="menu">
+                                    {% for curLang in languages %}
+                                    <li {% if defLang == curLang[0] %} class="active" {% endif %}>
+                                        <a href="{{ url_for('language_switch' , language=curLang[0]) }}">
+                                            <span class="fa fa-{% if curLang[0] == 'en' %}globe{% else %}language{% endif %}"></span>
+                                            {{curLang[1]}}
+                                        </a>
+                                    </li>  
+                                    {% endfor %}
+                                </ul>
+    			            </li>
+    		            </ul>
+    	            </div>
+    	        </div>
+            </nav>
+        </div>
+        <div class="container-fluid main-container">
+            {% block sidebar %}{% endblock %}
+            <div class="col-md-{% if adme %}12{% else %}10{% endif %} content hide postFlash">
+                <!-- For announcement flash message -->
+                <div class="alert alert-dismissable alert-info hide">
+                    <button class="close" onclick="$('.postFlash').addClass('hide')">&times;</button>
+                    {% set tra1 = translate('Notice: repeating announcement successfully.', 'en', [defLang]).split(':') %}
+                    <h4 class="text text-center ar2">[ <strong>{{tra1[0]}}</strong>: {{tra1[1]}}]</h4>
+                </div>
+                <div class="alert alert-dismissable alert-danger hide">
+                    <button class="close" onclick="$('.postFlash').addClass('hide')">&times;</button>
+                    {% set tra2 = translate('Error: failed to repeat announcement.', 'en', [defLang]).split(':') %}
+                    <h4 class="text text-center ar2">[ <strong>{{ tra2[0] }}</strong>: {{ tra2[1] }} ]</h4>
+                </div>
+            </div>
+            {% for category, message in get_flashed_messages(with_categories=true) %}
+                {% set tra = message and translate(message, 'en', [defLang]) %}
+                {% if tra %}
+                <div class="col-md-{% if adme %}12{% else %}10{% endif %} content">
+                    <div class="alert alert-{{ category }} alert-dismissable">
+                        <button class="close" type="button" data-dismiss="alert">&times;</button>
+                        <h4 class="text text-center ar2">[ <strong>{{ tra.split(':')[0] }}</strong>: {{ tra.split(':')[1] }} ]</h4>
+    	            </div>
+                </div>
+                {% endif %}
+            {% endfor %}
+            <div class="col-md-{% if adme %}12{% else %}10{% endif %} content mb-1">
+    	        {% block page_content %} {% endblock %}
+            </div>
+            {% if settings.visual_effects %}
+            <footer class="pull-left footer widw mt-3">
+    	        <div class="row mt-1">
+    	            <div class="col-xs-8 col-md-3 col-xs-offset-2 col-md-offset-2 pb-1">
+                        <a href="{{ url_for('static', filename='mpl.html') }}" target="_blank"
+                            data-toggle="tooltip" title="{{ translate('License', 'en', [defLang]) }}"
+                        >
+                            <center>
+                                <img src="{{ url_for('static', filename='images/license.png') }}"
+                                    class="lightit mb-1 img-responsive" width="35%"
+                                >
+                            </center>
+                            <h4 class="text text-center lightit ar1 text-muted">
+                                <strong>
+                                    {{ translate('All credit reserved to the author of FQM. This work is a free, open-source project licensed under Mozilla Public License version 2.0 .', 'en', [defLang]) }}
+                                </strong>
+                            </h4>
+                        </a>
+    	            </div>
+    	            <div class="col-sm-6">
+    		            <div class="row pt-1">
+                            {% for theRow in
+                                [["col-xs-12 hidden-lg hidden-md text-center col-sm-offset-6 pb-1", "3x"], 
+                                ["col-md-7 col-lg-8  hidden-xs hidden-sm col-md-offset-4 col-lg-offset-4 pb-1", "5x"]] 
+                            %}
+    		                    <div class="{{ theRow[0] }}">
+                                    <a href="https://www.youtube.com/channel/UC9_zci_JGr2hXBxziYbMMBw/videos" target="_blank"
+                                        data-toggle="tooltip"
+                                        title="Youtube {{ translate('tutorials', 'en', [defLang]) }}"
+                                    >
+                                        <i class="fa fa-{{theRow[1]}} fa-fw fa-youtube text-muted"></i>
+                                    </a>
+                                    <a href="https://fqms.github.io/" target="_blank"
+                                        data-toggle="tooltip"
+                                        title="FQM {{ translate('website', 'en', [defLang]) }}"
+                                    >
+                                        <i class="fa fa-{{theRow[1]}} fa-fw fa-rss text-muted"></i>
+                                    </a>
+    		    	                <a href="https://github.com/mrf345/fqm" target="_blank"
+                                        data-toggle="tooltip"
+                                        title="FQM {{ translate('source-code', 'en', [defLang]) }}"
+                                    >
+                                        <i class="fa fa-{{theRow[1]}} fa-fw fa-github text-muted"></i>
+                                    </a>
+    		    	                <a href="#" data-toggle="modal" data-target="#root_qr"
+                                        data-toggle="tooltip"
+                                        title="QR - {{ translate('main page', 'en', [defLang]) }}"
+                                    >
+                                        <i class="fa fa-{{theRow[1]}} fa-fw fa-qrcode text-muted"></i>
+                                    </a>
+                                </div>
+                            {% endfor %}
+        	    	    </div>
+    	            </div>
+    	        </div>
+            </footer>
+            {% endif %}
+        </div>
+        {% from '_modals.html' import qrModal %}
+        {{ qrModal([['touch_qr', translate('QR code touch screen', 'en', [defLang]), qrcode(url_for('core.touch', a=0, _external=True))],
+        ['display_qr', translate('QR code display screen', 'en', [defLang]), qrcode(url_for('core.display', _external=True))],
+        ['root_qr', translate('QR code main page', 'en', [defLang]), qrcode(url_for('core.root', _external=True))]], close=translate('Exit', 'en', [defLang])) }}
+    </body>
+</html>

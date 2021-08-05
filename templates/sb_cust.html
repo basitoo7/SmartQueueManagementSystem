@@ -1,0 +1,170 @@
+<!-- This Source Code Form is subject to the terms of the Mozilla Public
+   - License, v. 2.0. If a copy of the MPL was not distributed with this
+   - file, You can obtain one at http://mozilla.org/MPL/2.0/. -->
+
+{% macro sb_cust() %}
+<div class="col-md-2 sidebar">
+    <div class="row">
+	<!-- uncomment code for absolute positioning tweek see top comment in css -->
+	<div class="absolute-wrapper"> </div>
+	<!-- Menu -->
+	<div class="side-menu">
+	    <nav class="navbar navbar-default" style="font-size: large;" role="navigation">
+		<!-- Main Menu -->
+		<div class="side-menu-container">
+		    <ul class="nav navbar-nav">
+			<li id="da1" >
+			    <a href="{{ url_for('cust_app.multimedia', aa=1) }}">
+				<span class="fa fa-music"></span>
+        {{ translate('Multimedia', 'en', [defLang]) }}
+			    </a>
+			</li>
+			<!-- Dropdown-->
+			<li class="panel panel-default da2" id="dropdown">
+			    <a data-toggle="collapse" href="#dropdown-lvl1">
+				<span class="fa fa-desktop"></span>
+        {{ translate('Touch screen', 'en', [defLang]) }}
+        <span class="caret"></span>
+			    </a>
+			    <!-- Dropdown level 1 -->
+			    <div id="dropdown-lvl1" class="panel-collapse collapse">
+				<div class="panel-body">
+				    <ul class="nav navbar-nav">
+              <li  id="ts0"><a href="{{ url_for('cust_app.touchscreen_c', stab=0) }}">
+                1. {{ translate('Template', 'en', [defLang]) }}
+                <span class="fa fa-windows"></span>  <span class="badge pull-right" id="bb1"></span></a>
+              </li>
+					<li  id="ts2"><a href="{{ url_for('cust_app.touchscreen_c', stab=2) }}">
+            2. {{ translate('Title', 'en', [defLang]) }}
+            <span class="fa fa-text-width"></span>  <span class="badge pull-right" id="bb1"></span></a>
+          </li>
+					<li id="ts3"><a href="{{ url_for('cust_app.touchscreen_c', stab=3) }}">
+            3. {{ translate('Tasks', 'en', [defLang]) }}
+            <span class="fa fa-tasks"></span>  <span class="badge pull-right" id="bb2"></span></a>
+          </li>
+					<li id="ts4"><a href="{{ url_for('cust_app.touchscreen_c', stab=4) }}">
+            4. {{ translate('Notification', 'en', [defLang]) }}
+            <span class="fa fa-flag"></span>  <span class="badge pull-right" id="bb3"></span></a>
+          </li>
+					<li id="ts5"><a href="{{ url_for('cust_app.touchscreen_c', stab=5) }}">
+            5. {{ translate('Background', 'en', [defLang]) }}
+            <span class="fa fa-picture-o"></span>  <span class="badge pull-right" id="bb4"></span></a>
+          </li>
+				    </ul>
+				</div>
+			    </div>
+			</li>
+			<!-- Dropdown-->
+			<li class="panel panel-default da3" id="dropdown">
+			    <a data-toggle="collapse" href="#dropdown-lvl2">
+				<span class="fa fa-television"></span>
+        {{ translate('Display screen', 'en', [defLang]) }}
+        <span class="caret"></span>
+			    </a>
+
+			    <!-- Dropdown level 1 -->
+			    <div id="dropdown-lvl2" class="panel-collapse collapse">
+				<div class="panel-body">
+				    <ul class="nav navbar-nav">
+              <li><a href="{{ url_for('cust_app.displayscreen_c', stab=1) }}">
+                1. {{ translate('Template', 'en', [defLang]) }}
+                <span class="fa fa-windows"></span>  <span class="badge pull-right" id="bb7"></span></a>
+					<li><a href="{{ url_for('cust_app.displayscreen_c', stab=2) }}">
+            2. {{ translate('Title', 'en', [defLang]) }}
+            <span class="fa fa-text-width"></span>  <span class="badge pull-right" id="bb7"></span></a>
+          </li>
+					<li   ><a href="{{ url_for('cust_app.displayscreen_c', stab=3) }}">
+            3. {{ translate('Current ticket', 'en', [defLang]) }}
+            <span class="fa fa-ticket"></span>  <span class="badge pull-right" id="bb8"></span></a>
+          </li>
+					<li   ><a href="{{ url_for('cust_app.displayscreen_c', stab=4) }}">
+            4. {{ translate('Current office', 'en', [defLang]) }}
+            <span class="fa fa-building"></span>  <span class="badge pull-right" id="bb9"></span></a>
+          </li>
+					<li   ><a href="{{ url_for('cust_app.displayscreen_c', stab=5) }}">
+            5. {{ translate('Waiting tickets', 'en', [defLang]) }}
+            <span class="fa fa-clock-o"></span>  <span class="badge pull-right" id="bb9"></span></a>
+          </li>
+					<li   ><a href="{{ url_for('cust_app.displayscreen_c', stab=6) }}">
+            6. {{ translate('Notification sound', 'en', [defLang]) }}
+            <span class="fa fa-bell"></span>  <span class="badge pull-right" id="bb11"></span></a>
+          </li>
+					<li   ><a href="{{ url_for('cust_app.displayscreen_c', stab=7) }}">
+            7. {{ translate('Background', 'en', [defLang]) }}
+            <span class="fa fa-picture-o"></span>  <span class="badge pull-right" id="bb12"></span></a>
+          </li>
+          <li   ><a href="{{ url_for('cust_app.displayscreen_c', stab=8) }}">
+            8. {{ translate('Preferences', 'en', [defLang]) }}
+            <span class="fa fa-cog"></span>  <span class="badge pull-right" id="bb13"></span></a>
+          </li>
+				    </ul>
+				</div>
+			    </div>
+			</li>
+      {% if vtrue == 2 %}
+			<li class="panel panel-default da4 {% if ar %} ar1 {% endif %}" id="dropdown">
+			    <a data-toggle="collapse" href="#dropdown-lvl3">
+				    <span class="fa fa-film"></span>
+            {{ translate('Display slideshow', 'en', [defLang]) }}
+            <span class="caret"></span>
+			    </a>
+			    <!-- Dropdown level 1 -->
+			    <div id="dropdown-lvl3" class="panel-collapse collapse">
+				  <div class="panel-body">
+				    <ul class="nav navbar-nav">
+					    <li id="ss1">
+                  <a href="{{ url_for('cust_app.slideshow') }}">
+                    {{ translate('Slides list', 'en', [defLang]) }}
+                    <span class="fa fa-list"></span>  <span class="badge pull-right" id="bb7"></span>
+                  </a>
+              </li>
+					    <li id="ss2">
+                <a href="{{ url_for('cust_app.slide_c') }}">
+                  {{ translate('Slides settings', 'en', [defLang]) }}
+                  <span class="fa fa-cogs"></span>  <span class="badge pull-right" id="bb8"></span>
+                </a>
+              </li>
+					    <li id="ds1">
+                <a href="{{ url_for('cust_app.slide_a') }}">
+                  {{ translate('Add a slide', 'en', [defLang]) }}
+                  <span class="fa fa-plus"></span>  <span class="badge pull-right" id="bb9"></span>
+                </a>
+              </li>
+            </ul>
+				  </div>
+			    </div>
+      </li>
+      {% endif %}
+      {% if strue == 2 %}
+      <li id="da5" >
+          <a href="{{ url_for('cust_app.video') }}">
+        <span class="fa fa-video-camera"></span>
+        {{ translate('Display video', 'en', [defLang]) }}
+          </a>
+      </li>
+      {% endif %}
+      <li id="da7" >
+			    <a href="{{ url_for('cust_app.ticket') }}">
+				<span class="fa fa-print"></span>
+        {{ translate('Tickets', 'en', [defLang]) }}
+			    </a>
+      </li>
+      <li id="da8" >
+          <a href="{{ url_for('cust_app.alias') }}">
+        <span class="fa fa-comments-o"></span>
+        {{ translate('Aliases', 'en', [defLang]) }}
+          </a>
+      </li>
+      <li id="da9" >
+          <a href="{{ url_for('cust_app.background_tasks') }}">
+        <span class="fa fa-cog"></span>
+        {{ translate('Background tasks', 'en', [defLang]) }}
+          </a>
+      </li>
+		</div><!-- /.navbar-collapse -->
+	    </nav>
+
+	</div>
+    </div>
+</div>
+{% endmacro %}

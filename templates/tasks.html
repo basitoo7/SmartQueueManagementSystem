@@ -1,0 +1,180 @@
+<!-- This Source Code Form is subject to the terms of the Mozilla Public
+   - License, v. 2.0. If a copy of the MPL was not distributed with this
+   - file, You can obtain one at http://mozilla.org/MPL/2.0/. -->
+
+{% extends "base.html" %}
+{% block title %} FQM - {{ page_title }} {% endblock %}
+
+{% import "bootstrap/wtf.html" as wtf %}
+{% import "_macros.html" as macros %}
+
+{%- from "sb_manage.html" import sb_manage with context %}
+{% block sidebar %}
+{{ sb_manage() }}
+{% endblock %}
+
+{% block page_content %}
+{% from "_helpers.html" import render_field with context %}
+{%- from "auto_reload.html" import auto_reloader with context %}
+{% from '_footers.html' import spacer %}
+{% from '_modals.html' import confirmModal %}
+{%- from "_footers.html" import panel_footer, spacer with context %}
+{%- from "_tickets.html" import ticket_color, ticket_actions, processed_ticket_modal, ticket_orders with context %}
+{% if form.errors %}
+<script>
+$(document).ready(function () {
+	$('.updb').click()
+})
+</script>
+{% endif %}
+<div class="col-md-12">
+    <div class="panel panel-primary">
+    	<div class="panel-heading">
+	    	<div class="row">
+					{{ auto_reloader(duration=translate('Duration', 'en', [defLang]), refresh=translate('Auto reload', 'en', [defLang]), durMsg=translate('Enter a duration in seconds to auto-reload the page in :', 'en', [defLang])) }}
+				<div class="col-xs-12">
+		    		<h2 class="text text-center">
+						<strong>{{ translate('Task', 'en', [defLang]) }} : {{ task.name }}</strong>
+		    		</h2>
+				</div>
+			</div>
+			<div class='row text-center ar2'>{{ ticket_orders() }} </div>
+	    	<div class="row text-center text-muted h4 ar2">
+				<div class="col-sm-10 col-sm-offset-1 col-lg-offset-1 col-md-3 well">
+					{{ translate('Prefix', 'en', [defLang]) }} : <u>{% for o in task.offices %} {{o.prefix}} {% endfor %}</u>
+				</div>
+				<div class="col-sm-10 col-sm-offset-1 col-md-offset-0 col-md-4 well">
+					{{ translate('Created', 'en', [defLang]) }} : <u> {{ moment(task.timestamp).format('L') }}</u>
+				</div>
+				<div class="col-sm-10 col-sm-offset-1 col-md-offset-0 col-md-3 well">
+					{{ translate('Last ticket pulled', 'en', [defLang]) }} : <u> {{ last_ticket_pulled.number or 'None' }}</u>
+				</div>
+	    	</div>
+	    	<div class="row">
+				<div class="col-xs-12 text-center">
+		    		<div class="btn-group-justified">
+						{% if edit_task %}
+						<a class="btn btn-info updb" data-toggle="modal" data-target="#upd">
+			    			<span class="fa fa-pencil hidden-xs"></span>
+			    			<strong>{{ translate('Update', 'en', [defLang]) }}</strong>
+						</a>
+						<a class="btn btn-warning" data-toggle="modal" data-target="#rall">
+			    			<span class="fa fa-reply hidden-xs"></span>
+			    			<strong>{{ translate('Reset', 'en', [defLang]) }}</strong>
+						</a>
+						<a class="btn btn-danger" data-toggle="modal" data-target="#dall">
+			    			<span class="fa fa-trash hidden-xs"></span>
+			    			<strong>{{ translate('Delete', 'en', [defLang]) }}</strong>
+						</a>
+						{% endif %}
+		    		</div>
+				</div>
+	    	</div>
+		</div>
+        <div class="panel-body">
+	    	<div class="row text-center h3 text-muted hidden-xs ar2">
+				<div class="col-xs-1">
+				    ({{ translate('Ticket', 'en', [defLang]) }})
+				</div>
+				<div class="col-xs-2">
+				    ({{ translate('Issued', 'en', [defLang]) }})
+				</div>
+				<div class="col-xs-2">
+				    ({{ translate('Pulled', 'en', [defLang]) }})
+				</div>
+				<div class="col-xs-2">
+					({{ translate('In-Waiting', 'en', [defLang]) }})
+				</div>
+				<div class="col-xs-3">
+				    ({{ translate('Value', 'en', [defLang]) }})
+				</div>
+				<div class="col-xs-2">
+					({{ translate('Actions', 'en', [defLang]) }})
+				</div>
+	    	</div>
+	    	{% for o in tasksp %}
+	    	
+	    	<div class="row well ar1 h4 text-center {{ ticket_color(o) }} ">
+	    	  <div class="col-xs-12 col-sm-1">
+				<b> {% for oo in o.offices %} {{ oo.prefix }} {% endfor %} {# offices.filter_by(id=o.office_id).first().prefix #}{{ o.number }}.</b>
+	    	  </div>
+	    	  <div class="col-xs-12 col-sm-2">
+				<u>{{ moment(o.timestamp).format('L') }}</u>
+	    	  </div>
+	    	  <div class="col-xs-12 col-sm-2">
+				{% if o.p %} <u>{{ users.filter_by(id=o.pulledBy).first().name }} / {{ moment(o.pdt).fromNow() }}</u>
+				{% else %}
+				<u>{{ translate('Waiting', 'en', [defLang]) }}</u>
+				{% endif %}
+			  </div>
+			  <div class="col-xs-12 col-sm-2">
+				{% if o.p %} <u> {{ moment_wrapper(moment(o.timestamp)).toTime(o.pdt) }} </u>
+				{% else %} <u> {{ moment_wrapper(moment(o.timestamp)).toNow() }} </u> {% endif %}
+			  </div>
+	    	  <div class="col-xs-12 col-sm-3">
+				{% if o.n %}<u> {{ o.name }} </u> {% else %}
+				<u> {{ translate('None', 'en', [defLang]) }}/{{ translate('Printed', 'en', [defLang]) }} </u>
+				{% endif %}
+	    	  </div>
+			  <div class="col-xs-12 col-sm-2">
+				{{ ticket_actions(o) }}
+			  </div>
+	    	</div>
+
+			{{ processed_ticket_modal(tickets_form, o, ofc_id) }}
+			{% endfor %}
+			{{ spacer([translate('No tickets exist to be displayed', 'en', [defLang]), len(tasksp)]) }}
+	    </div>
+	    <div class="panel-footer text-center">
+			{% set task_serial = serial.filter_by(task_id=o_id) %}
+			{{ panel_footer([
+				[it(['Tickets total', task_serial.count()]), it(['Waiting', task_serial.waiting.count(), 'danger'])],
+				[it(['Processed', task_serial.processed.count()]), it(['Unattended', task_serial.unattended.count(), 'warning'])],
+			])}}
+			<div class="row text-center">
+		    	<div class="pagination">
+					{{ macros.pagination_widget(pagination, '.task', o_id=o_id, ofc_id=office.id, order_by=order_by) }}
+		    	</div>
+			</div>
+	    </div>
+	</div>
+</div>
+
+{{ confirmModal(
+	[
+	['rall', translate('Warning : Rest task', 'en', [defLang]), translate("You are attempting to reset a task to zero, with its all tickets been deleted and will not be retrievable , Are you sure of that ?", 'en', [defLang]), url_for('core.serial_rt', t_id=o_id, ofc_id=ofc_id)],
+	['dall', translate('Warning : Delete task', 'en', [defLang]), translate("You are attempting to delete a task whit its all tickets which will not be retrievable , Are you sure of that ?", 'en', [defLang]), url_for('manage_app.task_d', t_id=o_id, ofc_id=ofc_id)]
+	], yes=translate('Yes', 'en', [defLang]), no=translate('No', 'en', [defLang])
+) }}
+<div class="modal fade" id="upd">
+    <div class="modal-dialog">
+		<div class="modal-content">
+	    	<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal">&times;</button>
+				<h4 class="modal-title ar1 text-center">{{ translate('Update task', 'en', [defLang]) }}</h4>
+	    	</div>
+	    	<form method="POST" enctype="multipart/form-data" id="fm">
+				<div class="modal-body">
+					<p class="pt-10"></p>
+		    		{{ form.csrf_token }}
+					{{ render_field(form.name, class="form-control") }}
+					{{ render_field(form.hidden, class="form-control") }}
+					{% if common %}
+					<p class="h4 text-center text-muted ar2 pt-2 pb-1">
+						| {{ translate("Select the offices to add the common task to :", 'en', [defLang]) }} |
+					</p>
+					{% for ofc in offices.all() %}
+					{{ render_field(form['check' + str(ofc.id)], class="form-control") }}
+					{% endfor %}
+					{% endif %}
+					<p class="pb-10"></p>
+				</div>
+				<div class="modal-footer">
+		    		<button type="button" class="close btn btn-md btn-warning pull-left" data-dismiss="modal">{{ translate('Exit', 'en', [defLang]) }}</button>
+		    		<button type="submit" class="close btn btn-md btn-danger">{{ translate('Update', 'en', [defLang]) }}</button>
+				</div>
+	    	</form>
+		</div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,71 @@
+<!-- This Source Code Form is subject to the terms of the Mozilla Public
+   - License, v. 2.0. If a copy of the MPL was not distributed with this
+   - file, You can obtain one at http://mozilla.org/MPL/2.0/. -->
+
+{% extends "base.html" %}
+{% block title %} FQM - {{ page_title  }} {% endblock %}
+
+{%- from "sb_cust.html" import sb_cust with context %}
+{% block sidebar %}
+{{ sb_cust() }}
+{% endblock %}
+
+{% block head %}
+{{ super() }}
+<script type="text/javascript">
+$(document).ready(function() {
+  if ($('#status option:selected').val() === '1') $('#warn').removeClass('hide')
+  $('#status').change(function(){
+    $('#status option:selected').val() === '1' ? $('#warn').removeClass('hide') : $('#warn').addClass('hide')
+  })
+})
+</script>
+{% endblock %}
+
+{% block page_content %}
+{% from "_helpers.html" import render_field with context %}
+{% from '_modals.html' import qrModal %}
+<div class="col-md-12">
+  <form method="POST" enctype="multipart/form-data">
+	  <div class="panel panel-default" id="p1">
+	    <div class="panel-heading text-center">
+		    <h3 class="text-muted">
+          <span class="fa fa-film"></span>
+            <strong>
+              {{ translate('Slideshow', 'en', [defLang]) }} - {{ translate('Settings', 'en', [defLang]) }}
+            </strong>
+        </h3>
+	    </div>
+	    <div class="panel-body">
+		    {{ form.csrf_token }}
+        <center>
+          <a data-toggle="modal" data-target="#mym">
+            <img class="img-responsive img-thumbnail mb-2 mt-5 pic" id="map" width="40%"
+              alt="Map image"
+              src="{{ url_for('static', filename='images/slideshow.jpg') }}"
+            >
+          </a>
+        </center>
+		    {{ render_field(form.status, class="form-control") }}
+        <p class="pt-2"></p>
+		    <p id="warn" class="h3 ar2 mb-2 warn hide text-center text-danger">
+          | {{ translate('Notice: To enable video you must first disable slideshow', 'en', [defLang]) }} |
+		    </p>
+		    <a data-toggle="modal" data-target="#mym">
+		      <center><img class="img-responsive img-thumbnail mb-2 mt-2" id="map" width="15%" src="{{ url_for('static', filename='images/slideshow_nav.jpg') }}"></center>
+		    </a>
+		    {{ render_field(form.navigation, class="form-control") }}
+		    {{ render_field(form.effect, class="form-control") }}
+        {{ render_field(form.rotation, class="form-control") }}
+        <p class="pt-5"></p>
+		    <center>
+		        <button class="btn btn-md btn-danger" type="submit">{{ translate('Apply', 'en', [defLang]) }}</button>
+        </center>
+        <p class="pb-2"></p>
+	    </div>
+	  </div>
+  </form>
+</div>
+
+{{ qrModal([['mym', translate('Slideshow template', 'en', [defLang]), url_for('static', filename='images/slideshow.jpg')]], close=translate('Exit', 'en', [defLang])) }}
+{% endblock %}

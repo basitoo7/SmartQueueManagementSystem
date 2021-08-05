@@ -1,0 +1,147 @@
+<!-- This Source Code Form is subject to the terms of the Mozilla Public
+   - License, v. 2.0. If a copy of the MPL was not distributed with this
+   - file, You can obtain one at http://mozilla.org/MPL/2.0/. -->
+
+{% extends "base.html" %}
+{% block title %} FQM - {{ page_title }} {% endblock %}
+{% block head %}
+{{ super() }}
+<style>
+.qrw:hover {
+  filter: brightness(0.8);
+}
+</style>
+{% endblock %}
+
+{% import "bootstrap/wtf.html" as wtf %}
+{% import "_macros.html" as macros %}
+
+{%- from "sb_manage.html" import sb_manage with context %}
+{% block sidebar %}
+{{ sb_manage() }}
+{% endblock %}
+
+{% block page_content %}
+{%- from "auto_reload.html" import auto_reloader with context %}
+{%- from "_helpers.html" import render_field with context %}
+{%- from "_footers.html" import panel_footer, spacer with context %}
+{%- from "_tickets.html" import ticket_color, ticket_actions, processed_ticket_modal, ticket_orders with context %}
+<div class="col-md-12">
+    <div class="panel panel-primary">
+    	<div class="panel-heading">
+	    	<div class="row">
+				{{ auto_reloader(True, duration=translate('Duration', 'en', [defLang]), refresh=translate('Auto reload', 'en', [defLang]), durMsg=translate('Enter a duration in seconds to auto-reload the page in :', 'en', [defLang])) }}
+    			<div class="col-xs-12 hidden-md hidden-lg text-center mb-1">
+        			<a href="#" data-toggle="modal" data-target="#branch_qr"
+        				data-toggle="tooltip"
+        				title="QR - {{ translate('All tickets', 'en', [defLang]) }}"
+					>
+						<i class="fa fa-3x fa-fw fa-qrcode fa-spin qrw" style="color: white;"></i>
+					</a>
+				</div>
+				<div class="col-xs-12">
+		    		<h2 class="text text-center"><strong> {{ translate('All tickets', 'en', [defLang]) }} </strong></h2>
+				</div>
+			</div>
+			{% if last_ticket_pulled %}
+			<div class='row text-center ar2'>{{ ticket_orders() }} </div>
+			<div class="row text-center text-muted h4 ar2">
+				<div class="col-sm-10 col-sm-offset-1 col-md-offset-4 col-md-4 well">
+					{{ translate('Last ticket pulled', 'en', [defLang]) }} :
+					<u> {{ last_ticket_office.prefix }}{{ last_ticket_pulled.number or 'None' }}</u>
+				</div>
+			</div>
+			{% endif %}
+	    	<div class="row">
+				<div class="col-xs-12 text-center">
+		    		<div class="btn-group-justified">
+						<a class="btn btn-warning" data-toggle="modal" data-target="#rall">
+			    			<span class="fa fa-reply-all"></span>
+			    			<strong>{{ translate('Reset all', 'en', [defLang]) }}</strong>
+						</a>
+						{% if not settings.single_row %}
+						<a class="btn btn-danger" data-toggle="modal" data-target="#dall">
+			    			<span class="fa fa-trash"></span>
+			    			<strong>{{ translate('Delete all', 'en', [defLang]) }}</strong>
+						</a>
+						{% endif %}
+		    		</div>
+				</div>
+	    	</div>
+        </div>
+        <div class="panel-body">
+	    	<div class="row text-center ar2 h3 text-muted hidden-xs">
+				<div class="col-xs-1">
+		    		({{ translate('Ticket', 'en', [defLang]) }})
+				</div>
+				<div class="col-xs-2">
+		    		({{ translate('Issued', 'en', [defLang]) }})
+				</div>
+				<div class="col-xs-2">
+		    		({{ translate('Pulled', 'en', [defLang]) }})
+				</div>
+				<div class="col-xs-2">
+		    		({{ translate('In-Waiting', 'en', [defLang]) }})
+				</div>
+				<div class="col-xs-3">
+		    		({{ translate('Value', 'en', [defLang]) }})
+				</div>
+				<div class="col-xs-2">
+					({{ translate('Actions', 'en', [defLang]) }})
+				</div>
+	    	</div>
+	    	{% for o in officesp %}
+	      	
+			<div class="row well h4 text-center {{ ticket_color(o) }}">
+		  		<div class="col-xs-12 col-sm-1">
+		    		<b> {{ o.office.prefix }}{{ o.number }}.</b>
+		  		</div>
+		  		<div class="col-xs-12 col-sm-2">
+					  {{ moment(o.timestamp).format('L') }}
+		  		</div>
+		  		<div class="col-xs-12 col-sm-2">
+		    		{% if o.p %} <u>{{ o.puller_name }} / {{ moment(o.pdt).fromNow() }}</u>
+		    		{% else %} <u>{{ translate('Waiting', 'en', [defLang]) }}</u> {% endif %}
+				</div>
+				<div class="col-xs-12 col-sm-2">
+					{% if o.p %} <u> {{ moment_wrapper(moment(o.timestamp)).toTime(o.pdt) }} </u>
+					{% else %} <u> {{ moment_wrapper(moment(o.timestamp)).toNow() }} </u> {% endif %}
+				</div>
+		  		<div class="col-xs-12 col-sm-3">
+		    		{% if o.n %}<u> {{ o.name }} </u> {% else %} <u> {{ translate('None', 'en', [defLang]) }}/{{ translate('Printed', 'en', [defLang]) }} </u> {% endif %}
+		  		</div>
+				<div class="col-xs-12 col-sm-2">
+					{{ ticket_actions(o) }}
+				</div>
+			</div>
+
+			{{ processed_ticket_modal(tickets_form, o) }}
+			{% endfor %}
+			{{ spacer([translate('No tickets been issued yet to display', 'en', [defLang]), officesp|length ]) }}
+    	</div>
+		<div class="panel-footer text-center">
+			{{ panel_footer([
+				[it(['Tickets total', serial.count()]), it(['Waiting', serial.waiting.count(), 'danger'])],
+				[it(['Processed', serial.processed.count()]), it(['Unattended', serial.unattended.count(), 'warning'])],
+			]) }}
+	    	<div class="row text-center">
+				<div class="pagination">
+		    		{{ macros.pagination_widget(pagination, '.all_offices', order_by=order_by) }}
+				</div>
+	    	</div>
+		</div>
+	</div>
+</div>
+
+{% from '_modals.html' import confirmModal, qrModal %}
+{{ confirmModal(
+	[['rall', translate('Warning : Resetting all', 'en', [defLang]),
+	translate("You are attempting to reset every office and task to zero, with all tickets erased, that won't be retrievable , Are you sure of that ?", 'en', [defLang]),
+	url_for('core.serial_r', o_id=0) if settings.single_row else url_for('core.serial_ra')
+	],
+	['dall', translate('Warning : Deleting all', 'en', [defLang]),
+	translate("You are attempting to delete every office and task under it with all tickets, which won't be retrievable , Are you sure of that ?", 'en', [defLang]),
+	url_for('manage_app.office_da')]]
+, yes=translate('Yes', 'en', [defLang]), no=translate('No', 'en', [defLang]))}}
+{{ qrModal([['branch_qr', translate('QR code : All tickets', 'en', [defLang]), qrcode(url_for('manage_app.all_offices', _external=True))]], close=translate('Exit', 'en', [defLang])) }}
+{% endblock %}

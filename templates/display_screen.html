@@ -1,0 +1,309 @@
+<!-- This Source Code Form is subject to the terms of the Mozilla Public
+   - License, v. 2.0. If a copy of the MPL was not distributed with this
+   - file, You can obtain one at http://mozilla.org/MPL/2.0/. -->
+
+{% extends "base.html" %}
+{% block title %} FQM - {{ page_title  }} {% endblock %}
+
+{% block head %}
+{% from '_uniqueness.html' import uniqueness %}
+{{ super() }}
+<script src="{{ url_for('static', filename='extFunctions.js') }}"></script>
+{{ fontpicker.loader() }}
+{{ colorpicker.loader() }}
+{{ colorpicker.picker(ids=['#hcolor', '#h2color', '#tcolor', '#scolor', '#bgcolor'], showAlpha='false', allowEmpty='false') }}
+{{ colorpicker.picker(ids=['#hbg'], allowEmpty='false') }}
+{{ fontpicker.picker(
+    ids=['#hfont', '#tfont', '#sfont', '#h2font'],
+    families="['Aref Ruqaa', 'Cairo', 'Amiri', 'Changa', 'El Messiri', 'Harmattan', 'Jomhuria', 'Katibeh', 'Lalezar', 'Lateef', 'Lemonada', 'Mada', 'Mirza', 'Rakkas', 'Reem Kufi', 'Scheherazade']",
+    urlCss=url_for('static', filename='css/gfonts.css'))
+}}
+<!-- Loading uniqueness macro -->
+{{ uniqueness(hash, form.errors) }}
+<script type="text/javascript">
+    $(document).ready(function () {
+        // Change img src when select field changes from extFunction.js
+        watchIt(
+            '#display',
+            '.tobc',
+            ["{{ url_for('static', filename='images/map2.jpg') }}",
+            "{{ url_for('static', filename='images/map5.jpg') }}",
+			"{{ url_for('static', filename='images/map6.jpg') }}",
+			"{{ url_for('static', filename='images/map7.jpg') }}"],
+            function (position) {
+                if (['1', '2', '3'].indexOf(position) != -1) $('.warn').removeClass('hide')
+                else $('.warn').addClass('hide')
+            }
+        )
+    })
+</script>
+{% endblock %}
+
+
+{%- from "sb_dis.html" import sb_dis with context %}
+{% block sidebar %}
+{{ sb_dis() }}
+{% endblock %}
+
+{% block page_content %}
+{% from "_helpers.html" import render_field, render_errors with context %}
+{% from "_uniqueness.html" import unique_btns %}
+<div class="col-md-12">
+    <form method="POST" enctype="multipart/form-data" class='disciple'>
+      <div class="panel panel-default uniqueness">
+    	    <div class="panel-heading text-center">
+    		    <h3 class="text-muted">
+                    <strong>
+						<span class="fa fa-television"></span>
+						                    {{ translate('Display screen', 'en', [defLang]) }} - {{ translate('Template', 'en', [defLang]) }}
+					</strong>
+                </h3>
+    	    </div>
+    	    <div class="panel-body">
+    		    <center>
+    		        <a data-toggle="modal" data-target="#mym">
+    			        <img class="img-responsive img-thumbnail tobc mt-2 mb-2" id="map" width="45%"
+                            src="{{ url_for('static', filename='images/map2.jpg') }}"
+                        >
+    		        </a>
+  		            <p class="h3 ar2 text-muted mt-2 mb-2">
+  		               | {{ translate('The picture of the template is automatically changed to the one selected', 'en', [defLang]) }} |
+  		            </p>
+    		    </center>
+                <hr>
+                <h4 class="text-center text-danger pt-3 pb-3 ar2">
+                  | {{ translate('Reminder: Display screen is meant to be displayed on large sized screen so it does not support scalability', 'en', [defLang]) }} |
+                </h4>
+    		    {{ form.csrf_token }}
+    		    {{ render_field(form.display, class="form-control") }}
+                <h4 class="text-center text-danger warn hide pb-1 pt-3 ar2">
+                    | {{ translate('Reminder: First template is the only template that supports slideshow and video .', 'en', [defLang]) }} |
+                </h4>
+                <p class='pb-5'></p>
+                {{ unique_btns(translate('Previous', 'en', [defLang]), translate('Apply', 'en', [defLang]), translate('Next', 'en', [defLang])) }}
+                <p class='pb-3'></p>
+    	    </div>
+    	</div>
+	    <div class="panel panel-default uniqueness">
+	        <div class="panel-heading text-center">
+		        <h3 class="text-muted ar1">
+                    <strong>
+						<span class="fa fa-television"></span>
+						                    {{ translate('Display screen', 'en', [defLang]) }} - {{ translate('Title', 'en', [defLang]) }}
+					</strong>
+                </h3>
+	        </div>
+	        <div class="panel-body">
+		        <center>
+		            <a data-toggle="modal" data-target="#mym">
+			            <img class="img-responsive img-thumbnail mt-2" id="map" width="45%"
+                            src="{{ url_for('static', filename='images/map2_title.jpg') }}"
+                        >
+		            </a>
+		            <h3 class="text text-muted text-center mt-2">
+		            	| {{ translate('Main text box that, can be used to showcase the company brand or describe the template displayed to the customers', 'en', [defLang]) }} |
+		            </h3>
+		        </center>
+		        <hr>
+		        {{ render_field(form.title, class="form-control") }}
+		        {{ render_field(form.hsize, class="form-control") }}
+		        {{ render_field(form.hcolor, class="sp") }}
+		        {{ render_field(form.hbg, class="spa") }}
+                {{ render_field(form.hfont, class="form-control mb-5") }}
+                {{ render_field(form.effect, class="form-control text-center") }}
+                {{ render_field(form.repeats, class="text-center form-control") }}
+                {{ render_field(form.mduration, class="form-control text-center mb-6") }}
+		        {{ unique_btns(translate('Previous', 'en', [defLang]), translate('Apply', 'en', [defLang]), translate('Next', 'en', [defLang])) }}
+                <p class="pb-3"></p>
+	        </div>
+	    </div>
+	    <div class="panel panel-default uniqueness">
+	        <div class="panel-heading text-center">
+		        <h3 class="text-muted ar1">
+                    <strong>
+						<span class="fa fa-television"></span>
+						                    {{ translate('Display screen', 'en', [defLang]) }} - {{ translate('Current ticket', 'en', [defLang]) }}
+					</strong>
+                </h3>
+	        </div>
+	        <div class="panel-body">
+		        <center>
+		            <a data-toggle="modal" data-target="#mym">
+			            <img class="img-responsive img-thumbnail mt-3" id="map" width="40%"
+                            src="{{ url_for('static', filename='images/map2_ticket.jpg') }}"
+                        >
+		            </a>
+		            <h3 class="text text-muted text-center mt-2 ar2">
+			            | {{ translate('Current ticket meant to display the lastly pulled ticket by an office and it displays the ticket , its holder specified details', 'en', [defLang]) }} |
+		            </h3>
+		        </center>
+		        <hr>
+		        {{ render_field(form.h2size, class="form-control") }}
+		        {{ render_field(form.h2color, class="sp") }}
+                {{ render_field(form.h2font, class="form-control") }}
+                <p class="pb-7"></p>
+		        {{ unique_btns(translate('Previous', 'en', [defLang]), translate('Apply', 'en', [defLang]), translate('Next', 'en', [defLang])) }}
+                <p class="pb-4"></p>
+	        </div>
+	    </div>
+    	<div class="panel panel-default uniqueness">
+	        <div class="panel-heading text-center">
+		        <h3 class="text-muted">
+                    <strong>
+						<span class="fa fa-television"></span>
+						                    {{ translate('Display screen', 'en', [defLang]) }} - {{ translate('Current office', 'en', [defLang]) }}
+					</strong>
+                </h3>
+	        </div>
+	        <div class="panel-body">
+		        <center>
+		            <a data-toggle="modal" data-target="#mym">
+			            <img class="img-responsive img-thumbnail mt-3" id="map" width="40%"
+                            src="{{ url_for('static', filename='images/map2_office.jpg') }}"
+                        >
+		            </a>
+		            <h3 class="text text-muted text-center mt-2 ar2">
+		            	| {{ translate('Current office meant to display the details of the lastly responsible office of pulling a ticket for processing', 'en', [defLang]) }} |
+		            </h3>
+		        </center>
+		        <hr>
+		        {{ render_field(form.tsize, class="form-control") }}
+		        {{ render_field(form.tcolor, class="sp") }}
+		        {{ render_field(form.tfont, class="form-control") }}
+                <p class="pb-7"></p>
+                {{ unique_btns(translate('Previous', 'en', [defLang]), translate('Apply', 'en', [defLang]), translate('Next', 'en', [defLang])) }}
+                <p class="pb-3"></p>
+	        </div>
+	    </div>
+	    <div class="panel panel-default uniqueness">
+	        <div class="panel-heading text-center">
+		        <h3 class="text-muted">
+                    <strong>
+						<span class="fa fa-television"></span>
+						{{ translate('Display screen', 'en', [defLang]) }} - {{ translate('Waiting list', 'en', [defLang]) }}
+					</strong>
+                </h3>
+	        </div>
+	        <div class="panel-body">
+		        <center>
+		            <a data-toggle="modal" data-target="#mym">
+		        	    <img class="img-responsive img-thumbnail mt-3" id="map" width="40%" src="{{ url_for('static', filename='images/map2_waiting.jpg') }}">
+		            </a>
+		            <h3 class="text text-muted text-center mt-2 ar2">
+		            	| {{ translate('Waiting list of tickets which meant to display , the list of tickets on wait to be processed by one of the offices', 'en', [defLang]) }} |
+		            </h3>
+		        </center>
+		        <hr>
+		        {{ render_field(form.ssize, class="form-control") }}
+		        {{ render_field(form.scolor, class="sp") }}
+				{{ render_field(form.sfont, class="form-control") }}
+				{{ render_field(form.hide_ticket_index, class="form-control") }}
+                <p class="pb-9"></p>
+                {{ unique_btns(translate('Previous', 'en', [defLang]), translate('Apply', 'en', [defLang]), translate('Next', 'en', [defLang])) }}
+                <p class="pb-3"></p>
+	        </div>
+	    </div>
+	    <div class="panel panel-default uniqueness">
+	        <div class="panel-heading text-center">
+		        <h3 class="text-muted">
+                    <strong>
+						<span class="fa fa-television"></span>
+						{{ translate('Display screen', 'en', [defLang]) }} - {{ translate('Notification sound', 'en', [defLang]) }}
+					</strong>
+                </h3>
+	        </div>
+	        <div class="panel-body">
+		        <center>
+		            <a data-toggle="modal" data-target="#mym">
+		        	    <span class="img-responsive img-thumbnail fa mt-4 fa-5x fa-bell" id="map"></span>
+		            </a>
+		            <h3 class="text text-muted text-center mt-2 mb-4 ar2">
+		            	| {{ translate('A sound tune that will be played whenever the customer ticket has been pulled . As well as a text to speech announcement which will be played in the language selected', 'en', [defLang]) }} |
+		            </h3>
+		        </center>
+		        <hr>
+		        {{ render_field(form.naudio, class="form-control") }}
+                {{ render_field(form.anr, class='form-control') }}
+				{{ render_field(form.anrt, class="form-control")}}
+				{{ render_field(form.wait_for_announcement, class="form-control") }}
+				{% for short, bundle in tts.items() %}
+					{{ render_field(form['check' + short], class='form-control') }}
+				{% endfor %}
+                <p class="pb-6"></p>
+                {{ unique_btns(translate('Previous', 'en', [defLang]), translate('Apply', 'en', [defLang]), translate('Next', 'en', [defLang])) }}
+                <p class="pb-4"></p>
+	        </div>
+	    </div>
+	    <div class="panel panel-default uniqueness">
+	        <div class="panel-heading text-center">
+		        <h3 class="text-muted">
+                    <strong>
+						<span class="fa fa-television"></span>
+						{{ translate('Display screen', 'en', [defLang]) }} - {{ translate('Background', 'en', [defLang]) }}
+					</strong>
+                </h3>
+	        </div>
+	        <div class="panel-body">
+		        <center>
+		            <a data-toggle="modal" data-target="#mym">
+			            <img class="img-responsive img-thumbnail mt-4" id="map" width="40%"
+                            src="{{ url_for('static', filename='images/map2_background.jpg') }}"
+                        >
+		            </a>
+		            <h3 class="text text-muted text-center ar2 mt-2 mb-4">
+		            	| {{ translate('The background image on-which all elements of the display screen will appear. you can select a specific color or chose to select your own special background image from the multimedia uploaded images. And finally the refresh rate of the Display screen', 'en', [defLang]) }} |
+		            </h3>
+		        </center>
+		        <hr>
+		        {{ render_field(form.background, class="mb-3 form-control") }}
+		        {{ form.bgcolor(class_="sp") }}
+                <p class="pb-3"></p>
+                <p class="pb-4"></p>
+		        {{ unique_btns(translate('Previous', 'en', [defLang]), translate('Apply', 'en', [defLang]), translate('Next', 'en', [defLang])) }}
+                <p class="pt-4"></p>
+	        </div>
+		</div>
+		<div class="panel panel-default uniqueness">
+	        <div class="panel-heading text-center">
+		        <h3 class="text-muted">
+                    <strong>
+						<span class="fa fa-cog"></span>
+						{{ translate('Display screen', 'en', [defLang]) }} - {{ translate('Preferences', 'en', [defLang]) }}
+					</strong>
+                </h3>
+	        </div>
+	        <div class="panel-body">
+		        <center>
+		            <a data-toggle="modal" data-target="#mym">
+			            <img class="img-responsive img-thumbnail tobc mt-4" id="map" width="40%"
+                            src="{{ url_for('static', filename='images/map2.jpg') }}"
+                        >
+		            </a>
+		            <h3 class="text text-muted text-center ar2 mt-2 mb-4">
+		            	| {{ translate('Additional preferences and settings to control certain features within the display screen', 'en', [defLang]) }} |
+		            </h3>
+		        </center>
+		        <hr>
+				{{ render_field(form.rrate, class="form-control") }}
+				<p class="pb-1"></p>
+				{{ render_field(form.prefix, class="form-control") }}
+				<p class="pb-1"></p>
+				{{ render_field(form.always_show_ticket_number, class="form-control") }}
+                <p class="pb-3"></p>
+		        {{ render_errors(form.errors) }}
+                <p class="pb-4"></p>
+		        {{ unique_btns(translate('Previous', 'en', [defLang]), translate('Apply', 'en', [defLang]), translate('Next', 'en', [defLang])) }}
+                <p class="pt-4"></p>
+	        </div>
+	    </div>
+    </form>
+</div>
+
+{% from '_modals.html' import mapModal %}
+{{ mapModal([[
+    'mym',
+    translate('Template map', 'en', [defLang]),
+    url_for('static', filename='images/map2.jpg')
+]], close=translate('Exit', 'en', [defLang])) }}
+
+{% endblock %}

@@ -1,0 +1,38 @@
+<!-- This Source Code Form is subject to the terms of the Mozilla Public
+   - License, v. 2.0. If a copy of the MPL was not distributed with this
+   - file, You can obtain one at http://mozilla.org/MPL/2.0/. -->
+   
+{% extends "base.html" %}
+{% block title %} FQM - {{ page_title  }} {% endblock %}
+
+{% block page_content %}
+{% from "_helpers.html" import render_field with context %}
+<div class="col-md-12">
+  <form method="POST" enctype="multipart/form-data" id="fm">
+	  <div class="panel panel-default">
+	      <div class="panel-heading text-center">
+	  	<h3 class="text-muted">
+	  	    <strong>
+	  		    <span class="fa fa-pencil"></span> {{ translate('Update admin password', 'en', [defLang]) }}
+	  	    </strong>
+	  	</h3>
+	      </div>
+	    <div class="panel-body">
+	  	  {{ form.csrf_token }}
+        <p class="h3 ar2 text-center mt-4 mb-3 text-danger">
+          | {{ translate('It is highly recommended to change the default password for security reasons', 'en', [defLang]) }} |
+        </p>
+        <p class="h4 text-center mt-1 mb-3 text-muted">
+	  	    |  {{ translate('the only update-able attribute to the main admin account is password', 'en', [defLang]) }}  |
+	  	  </p>
+	  	  {{ render_field(form.password, class="form-control") }}
+        <p class="pt-5"></p>
+	  	  <center>
+          <button class="btn btn-md btn-danger" type="submit">{{ translate('Update', 'en', [defLang]) }}</button>
+	  	  </center>
+        <p class="pb-3"></p>
+	     </div>
+	  </div>
+  </form>
+</div>
+{% endblock %}

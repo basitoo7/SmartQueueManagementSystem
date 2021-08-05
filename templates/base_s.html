@@ -1,0 +1,49 @@
+<!-- This Source Code Form is subject to the terms of the Mozilla Public
+   - License, v. 2.0. If a copy of the MPL was not distributed with this
+   - file, You can obtain one at http://mozilla.org/MPL/2.0/. -->
+
+<html>
+    <head>
+        <title>{% block title %} FQM - {% endblock %}</title>
+        {% block head %}
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link href="{{ url_for('static', filename='backstrap/css/bootstrap.min.css') }}" rel="stylesheet">
+        <link href="{{ url_for('static', filename='backstrap/css/bootstrap-theme.min.css') }}" rel="stylesheet">
+        <link href="{{ url_for('static', filename='backstrap/css/bootstrap-theme.min.css.map') }}" rel="stylesheet">
+        <link href="{{ url_for('static', filename='css/fade.css') }}" rel="stylesheet">
+        <link href="{{ url_for('static', filename='css/gfonts.css') }}" rel="stylesheet">
+        <link href="{{ url_for('static', filename='css/spacing.css') }}" rel="stylesheet">
+        <link rel="shortcut icon" href="/static/images/favicon.png" type="image/x-icon">
+        <link rel="shortcut icon"
+            href="{{ url_for('static', filename='images/favicon.ico') }}"
+        >
+        <script src="{{ url_for('static', filename='backstrap/jquery.min.js') }}"></script>
+        <script src="{{ url_for('static', filename='jquery-ui.min.js') }}"></script>
+        <script src="{{ url_for('static', filename='backstrap/js/bootstrap.min.js') }}"></script>
+        <script src="{{ url_for('static', filename='beloading.js') }}"></script>
+        {% if settings.visual_effects %}
+        <script type='text/javascript'>
+            $(document).ready(function () {
+                beloading({
+                  background: 'rgba(0,0,0,1)',
+                  text: ' ',
+                  icon: ' '
+                })
+            })
+        </script>
+        {% endif %}
+        {% endblock %}
+    </head>
+    <body>
+        <noscript>
+            <style>html{display:none;}</style>
+            <meta http-equiv="refresh" content="0.0;url=/nojs/0">
+        </noscript>
+        <div class="container-fluid">
+            <div class="col-xs-12">
+                {% block page_content %} {% endblock %}
+            </div>
+        </div>
+    </body>
+</html>
